@@ -1,4 +1,4 @@
-module github.com/tabo-syu/famicon
+module github.com/tabo-syu/famicom
 
 go 1.22.3
 
