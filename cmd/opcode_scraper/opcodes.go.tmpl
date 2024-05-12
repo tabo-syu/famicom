@@ -2,25 +2,25 @@
 package cpu
 
 type OpCode struct {
-	Code   uint8
-	Name   string
-	Bytes  uint8
-	Cycles uint8
-	Mode   AddressingMode
+	code   uint8
+	name   string
+	bytes  uint8
+	cycles uint8
+	mode   addressingMode
 }
 
-func NewOpCode(code uint8, name string, bytes uint8, cycles uint8, mode AddressingMode) OpCode {
+func newOpCode(code uint8, name string, bytes uint8, cycles uint8, mode addressingMode) OpCode {
 	return OpCode{
-		Code:   code,
-		Name:   name,
-		Bytes:  bytes,
-		Cycles: cycles,
-		Mode:   mode,
+		code:   code,
+		name:   name,
+		bytes:  bytes,
+		cycles: cycles,
+		mode:   mode,
 	}
 }
 
 var OpCodes = map[uint8]OpCode{
 {{range $OpCode := . }}// {{ $OpCode.Name }}
-	{{range .Modes}}0x{{ .Code }}: NewOpCode(0x{{ .Code }}, "{{ $OpCode.Name }}", {{ .Bytes }}, {{ .Cycles }}, AddressingMode_{{ .Name }}),
+	{{range .Modes}}0x{{ .Code }}: newOpCode(0x{{ .Code }}, "{{ $OpCode.Name }}", {{ .Bytes }}, {{ .Cycles }}, addressingMode_{{ .Name }}),
 {{end}}{{end}}
 }

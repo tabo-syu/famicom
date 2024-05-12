@@ -3,41 +3,42 @@ package cpu
 import "github.com/tabo-syu/famicom/internal/memory"
 
 type CPU struct {
-	ProgramCounter uint16
-	RegisterA      uint8
-	RegisterX      uint8
-	RegisterY      uint8
-	Status         Status
+	programCounter uint16
+	registerA      uint8
+	registerX      uint8
+	registerY      uint8
+	status         status
 
 	memory memory.Memory
 }
 
-type AddressingMode int
+type addressingMode int
 
 const (
-	AddressingMode_Implied AddressingMode = iota
-	AddressingMode_Accumulator
-	AddressingMode_Immediate
-	AddressingMode_ZeroPage
-	AddressingMode_ZeroPageX
-	AddressingMode_ZeroPageY
-	AddressingMode_Relative
-	AddressingMode_Absolute
-	AddressingMode_AbsoluteX
-	AddressingMode_AbsoluteY
-	AddressingMode_Indirect
-	AddressingMode_IndirectX
-	AddressingMode_IndirectY
-	AddressingMode_NoneAddressing
+	addressingMode_Implied addressingMode = iota
+	addressingMode_Accumulator
+	addressingMode_Immediate
+	addressingMode_ZeroPage
+	addressingMode_ZeroPageX
+	addressingMode_ZeroPageY
+	addressingMode_Relative
+	addressingMode_Absolute
+	addressingMode_AbsoluteX
+	addressingMode_AbsoluteY
+	addressingMode_Indirect
+	addressingMode_IndirectX
+	addressingMode_IndirectY
+	addressingMode_NoneAddressing
 )
 
 func NewCPU() CPU {
 	return CPU{
-		ProgramCounter: 0,
-		RegisterA:      0,
-		RegisterX:      0,
-		Status:         NewStatus(),
-		memory:         memory.NewMemory(),
+		programCounter: 0,
+		registerA:      0,
+		registerX:      0,
+		status:         newStatus(),
+
+		memory: memory.NewMemory(),
 	}
 }
 
@@ -47,68 +48,68 @@ func (cpu *CPU) Load(program []uint8) {
 }
 
 func (cpu *CPU) Reset() {
-	cpu.RegisterA = 0
-	cpu.RegisterX = 0
-	cpu.Status = NewStatus()
+	cpu.registerA = 0
+	cpu.registerX = 0
+	cpu.status = newStatus()
 
 	// 0x80_00
-	cpu.ProgramCounter = cpu.memory.ReadUint16(0xFF_FC)
+	cpu.programCounter = cpu.memory.ReadUint16(0xFF_FC)
 }
 
-func (cpu *CPU) getOperandAddress(mode AddressingMode) uint16 {
+func (cpu *CPU) getOperandAddress(mode addressingMode) uint16 {
 	switch mode {
-	case AddressingMode_Immediate:
-		return cpu.ProgramCounter
+	case addressingMode_Immediate:
+		return cpu.programCounter
 
-	case AddressingMode_ZeroPage:
-		return uint16(cpu.memory.Read(cpu.ProgramCounter))
+	case addressingMode_ZeroPage:
+		return uint16(cpu.memory.Read(cpu.programCounter))
 
-	case AddressingMode_ZeroPageX:
-		position := cpu.memory.Read(cpu.ProgramCounter)
-		address := uint16(position + cpu.RegisterX)
-
-		return address
-
-	case AddressingMode_ZeroPageY:
-		position := cpu.memory.Read(cpu.ProgramCounter)
-		address := uint16(position + cpu.RegisterY)
+	case addressingMode_ZeroPageX:
+		position := cpu.memory.Read(cpu.programCounter)
+		address := uint16(position + cpu.registerX)
 
 		return address
 
-	case AddressingMode_Absolute:
-		return cpu.memory.ReadUint16(cpu.ProgramCounter)
-
-	case AddressingMode_AbsoluteX:
-		base := cpu.memory.ReadUint16(cpu.ProgramCounter)
-		address := base + uint16(cpu.RegisterX)
+	case addressingMode_ZeroPageY:
+		position := cpu.memory.Read(cpu.programCounter)
+		address := uint16(position + cpu.registerY)
 
 		return address
 
-	case AddressingMode_AbsoluteY:
-		base := cpu.memory.ReadUint16(cpu.ProgramCounter)
-		address := base + uint16(cpu.RegisterY)
+	case addressingMode_Absolute:
+		return cpu.memory.ReadUint16(cpu.programCounter)
+
+	case addressingMode_AbsoluteX:
+		base := cpu.memory.ReadUint16(cpu.programCounter)
+		address := base + uint16(cpu.registerX)
 
 		return address
 
-	case AddressingMode_IndirectX:
-		base := cpu.memory.Read(cpu.ProgramCounter)
-		pointer := base + cpu.RegisterX
+	case addressingMode_AbsoluteY:
+		base := cpu.memory.ReadUint16(cpu.programCounter)
+		address := base + uint16(cpu.registerY)
+
+		return address
+
+	case addressingMode_IndirectX:
+		base := cpu.memory.Read(cpu.programCounter)
+		pointer := base + cpu.registerX
 		low := cpu.memory.Read(uint16(pointer))
 		high := cpu.memory.Read(uint16(pointer + 1))
 		address := uint16(high)<<8 | uint16(low)
 
 		return address
 
-	case AddressingMode_IndirectY:
-		base := cpu.memory.Read(cpu.ProgramCounter)
+	case addressingMode_IndirectY:
+		base := cpu.memory.Read(cpu.programCounter)
 		low := cpu.memory.Read(uint16(base))
 		high := cpu.memory.Read(uint16(base + 1))
 		derefBase := uint16(high)<<8 | uint16(low)
-		deref := derefBase + uint16(cpu.RegisterY)
+		deref := derefBase + uint16(cpu.registerY)
 
 		return deref
 
-	case AddressingMode_NoneAddressing:
+	case addressingMode_NoneAddressing:
 		panic("through `NoneAddressing`")
 
 	default:
@@ -118,84 +119,84 @@ func (cpu *CPU) getOperandAddress(mode AddressingMode) uint16 {
 
 func (cpu *CPU) Run() {
 	for {
-		opscode := cpu.memory.Read(cpu.ProgramCounter)
-		cpu.ProgramCounter++
+		opscode := cpu.memory.Read(cpu.programCounter)
+		cpu.programCounter++
 
 		switch opscode {
 		// STA(ZeroPage)
 		case 0x85:
-			cpu.sta(AddressingMode_ZeroPage)
-			cpu.ProgramCounter++
+			cpu.sta(addressingMode_ZeroPage)
+			cpu.programCounter++
 
 		// STA(ZeroPageX)
 		case 0x95:
-			cpu.sta(AddressingMode_ZeroPageX)
-			cpu.ProgramCounter++
+			cpu.sta(addressingMode_ZeroPageX)
+			cpu.programCounter++
 
 		// STA(Absolute)
 		case 0x8D:
-			cpu.sta(AddressingMode_Absolute)
-			cpu.ProgramCounter += 2
+			cpu.sta(addressingMode_Absolute)
+			cpu.programCounter += 2
 
 		// STA(AbsoluteX)
 		case 0x9D:
-			cpu.sta(AddressingMode_AbsoluteX)
-			cpu.ProgramCounter += 2
+			cpu.sta(addressingMode_AbsoluteX)
+			cpu.programCounter += 2
 
 		// STA(AbsoluteY)
 		case 0x99:
-			cpu.sta(AddressingMode_AbsoluteY)
-			cpu.ProgramCounter += 2
+			cpu.sta(addressingMode_AbsoluteY)
+			cpu.programCounter += 2
 
 		// STA(IndirectX)
 		case 0x81:
-			cpu.sta(AddressingMode_IndirectX)
-			cpu.ProgramCounter++
+			cpu.sta(addressingMode_IndirectX)
+			cpu.programCounter++
 
 		// STA(IndirectY)
 		case 0x91:
-			cpu.sta(AddressingMode_IndirectY)
-			cpu.ProgramCounter++
+			cpu.sta(addressingMode_IndirectY)
+			cpu.programCounter++
 
 		// LDA(Immediate)
 		case 0xA9:
-			cpu.lda(AddressingMode_Immediate)
-			cpu.ProgramCounter++
+			cpu.lda(addressingMode_Immediate)
+			cpu.programCounter++
 
 		// LDA(ZeroPage)
 		case 0xA5:
-			cpu.lda(AddressingMode_ZeroPage)
-			cpu.ProgramCounter++
+			cpu.lda(addressingMode_ZeroPage)
+			cpu.programCounter++
 
 		// LDA(ZeroPageX)
 		case 0xB5:
-			cpu.lda(AddressingMode_ZeroPageX)
-			cpu.ProgramCounter++
+			cpu.lda(addressingMode_ZeroPageX)
+			cpu.programCounter++
 
 		// LDA(Absolute)
 		case 0xAD:
-			cpu.lda(AddressingMode_Absolute)
-			cpu.ProgramCounter += 2
+			cpu.lda(addressingMode_Absolute)
+			cpu.programCounter += 2
 
 		// LDA(AbsoluteX)
 		case 0xBD:
-			cpu.lda(AddressingMode_AbsoluteX)
-			cpu.ProgramCounter += 2
+			cpu.lda(addressingMode_AbsoluteX)
+			cpu.programCounter += 2
 
 		// LDA(AbsoluteY)
 		case 0xB9:
-			cpu.lda(AddressingMode_AbsoluteY)
-			cpu.ProgramCounter += 2
+			cpu.lda(addressingMode_AbsoluteY)
+			cpu.programCounter += 2
 
 		// LDA(IndirectX)
 		case 0xA1:
-			cpu.lda(AddressingMode_IndirectX)
-			cpu.ProgramCounter++
+			cpu.lda(addressingMode_IndirectX)
+			cpu.programCounter++
 
 		// LDA(IndirectY)
 		case 0xB1:
-			cpu.lda(AddressingMode_IndirectY)
-			cpu.ProgramCounter++
+			cpu.lda(addressingMode_IndirectY)
+			cpu.programCounter++
 
 		// TAX
 		case 0xAA:
@@ -220,39 +221,39 @@ func (cpu *CPU) loadAndRun(program []uint8) {
 	cpu.Run()
 }
 
-func (cpu *CPU) sta(mode AddressingMode) {
+func (cpu *CPU) sta(mode addressingMode) {
 	address := cpu.getOperandAddress(mode)
-	cpu.memory.Write(address, cpu.RegisterA)
+	cpu.memory.Write(address, cpu.registerA)
 }
 
-func (cpu *CPU) lda(mode AddressingMode) {
+func (cpu *CPU) lda(mode addressingMode) {
 	address := cpu.getOperandAddress(mode)
 	value := cpu.memory.Read(address)
 
-	cpu.RegisterA = value
-	cpu.updateZeroAndNegativeFlags(cpu.RegisterA)
+	cpu.registerA = value
+	cpu.updateZeroAndNegativeFlags(cpu.registerA)
 }
 
 func (cpu *CPU) tax() {
-	cpu.RegisterX = cpu.RegisterA
-	cpu.updateZeroAndNegativeFlags(cpu.RegisterA)
+	cpu.registerX = cpu.registerA
+	cpu.updateZeroAndNegativeFlags(cpu.registerA)
 }
 
 func (cpu *CPU) inx() {
-	cpu.RegisterX++
-	cpu.updateZeroAndNegativeFlags(cpu.RegisterX)
+	cpu.registerX++
+	cpu.updateZeroAndNegativeFlags(cpu.registerX)
 }
 
 func (cpu *CPU) updateZeroAndNegativeFlags(register uint8) {
 	if register == 0 {
-		cpu.Status.SetZ(true)
+		cpu.status.setZ(true)
 	} else {
-		cpu.Status.SetZ(false)
+		cpu.status.setZ(false)
 	}
 
 	if register&0b0100_0000 != 0 {
-		cpu.Status.SetN(true)
+		cpu.status.setN(true)
 	} else {
-		cpu.Status.SetN(false)
+		cpu.status.setN(false)
 	}
 }

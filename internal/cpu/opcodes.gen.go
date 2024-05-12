@@ -2,229 +2,229 @@
 package cpu
 
 type OpCode struct {
-	Code   uint8
-	Name   string
-	Bytes  uint8
-	Cycles uint8
-	Mode   AddressingMode
+	code   uint8
+	name   string
+	bytes  uint8
+	cycles uint8
+	mode   addressingMode
 }
 
-func NewOpCode(code uint8, name string, bytes uint8, cycles uint8, mode AddressingMode) OpCode {
+func newOpCode(code uint8, name string, bytes uint8, cycles uint8, mode addressingMode) OpCode {
 	return OpCode{
-		Code:   code,
-		Name:   name,
-		Bytes:  bytes,
-		Cycles: cycles,
-		Mode:   mode,
+		code:   code,
+		name:   name,
+		bytes:  bytes,
+		cycles: cycles,
+		mode:   mode,
 	}
 }
 
 var OpCodes = map[uint8]OpCode{
 	// ADC
-	0x69: NewOpCode(0x69, "ADC", 2, 2, AddressingMode_Immediate),
-	0x65: NewOpCode(0x65, "ADC", 2, 3, AddressingMode_ZeroPage),
-	0x75: NewOpCode(0x75, "ADC", 2, 4, AddressingMode_ZeroPageX),
-	0x6D: NewOpCode(0x6D, "ADC", 3, 4, AddressingMode_Absolute),
-	0x7D: NewOpCode(0x7D, "ADC", 3, 4 /*(+1 if page crossed)*/, AddressingMode_AbsoluteX),
-	0x79: NewOpCode(0x79, "ADC", 3, 4 /*(+1 if page crossed)*/, AddressingMode_AbsoluteY),
-	0x61: NewOpCode(0x61, "ADC", 2, 6, AddressingMode_IndirectX),
-	0x71: NewOpCode(0x71, "ADC", 2, 5 /*(+1 if page crossed)*/, AddressingMode_IndirectY),
+	0x69: newOpCode(0x69, "ADC", 2, 2, addressingMode_Immediate),
+	0x65: newOpCode(0x65, "ADC", 2, 3, addressingMode_ZeroPage),
+	0x75: newOpCode(0x75, "ADC", 2, 4, addressingMode_ZeroPageX),
+	0x6D: newOpCode(0x6D, "ADC", 3, 4, addressingMode_Absolute),
+	0x7D: newOpCode(0x7D, "ADC", 3, 4 /*(+1 if page crossed)*/, addressingMode_AbsoluteX),
+	0x79: newOpCode(0x79, "ADC", 3, 4 /*(+1 if page crossed)*/, addressingMode_AbsoluteY),
+	0x61: newOpCode(0x61, "ADC", 2, 6, addressingMode_IndirectX),
+	0x71: newOpCode(0x71, "ADC", 2, 5 /*(+1 if page crossed)*/, addressingMode_IndirectY),
 	// AND
-	0x29: NewOpCode(0x29, "AND", 2, 2, AddressingMode_Immediate),
-	0x25: NewOpCode(0x25, "AND", 2, 3, AddressingMode_ZeroPage),
-	0x35: NewOpCode(0x35, "AND", 2, 4, AddressingMode_ZeroPageX),
-	0x2D: NewOpCode(0x2D, "AND", 3, 4, AddressingMode_Absolute),
-	0x3D: NewOpCode(0x3D, "AND", 3, 4 /*(+1 if page crossed)*/, AddressingMode_AbsoluteX),
-	0x39: NewOpCode(0x39, "AND", 3, 4 /*(+1 if page crossed)*/, AddressingMode_AbsoluteY),
-	0x21: NewOpCode(0x21, "AND", 2, 6, AddressingMode_IndirectX),
-	0x31: NewOpCode(0x31, "AND", 2, 5 /*(+1 if page crossed)*/, AddressingMode_IndirectY),
+	0x29: newOpCode(0x29, "AND", 2, 2, addressingMode_Immediate),
+	0x25: newOpCode(0x25, "AND", 2, 3, addressingMode_ZeroPage),
+	0x35: newOpCode(0x35, "AND", 2, 4, addressingMode_ZeroPageX),
+	0x2D: newOpCode(0x2D, "AND", 3, 4, addressingMode_Absolute),
+	0x3D: newOpCode(0x3D, "AND", 3, 4 /*(+1 if page crossed)*/, addressingMode_AbsoluteX),
+	0x39: newOpCode(0x39, "AND", 3, 4 /*(+1 if page crossed)*/, addressingMode_AbsoluteY),
+	0x21: newOpCode(0x21, "AND", 2, 6, addressingMode_IndirectX),
+	0x31: newOpCode(0x31, "AND", 2, 5 /*(+1 if page crossed)*/, addressingMode_IndirectY),
 	// ASL
-	0x0A: NewOpCode(0x0A, "ASL", 1, 2, AddressingMode_Accumulator),
-	0x06: NewOpCode(0x06, "ASL", 2, 5, AddressingMode_ZeroPage),
-	0x16: NewOpCode(0x16, "ASL", 2, 6, AddressingMode_ZeroPageX),
-	0x0E: NewOpCode(0x0E, "ASL", 3, 6, AddressingMode_Absolute),
-	0x1E: NewOpCode(0x1E, "ASL", 3, 7, AddressingMode_AbsoluteX),
+	0x0A: newOpCode(0x0A, "ASL", 1, 2, addressingMode_Accumulator),
+	0x06: newOpCode(0x06, "ASL", 2, 5, addressingMode_ZeroPage),
+	0x16: newOpCode(0x16, "ASL", 2, 6, addressingMode_ZeroPageX),
+	0x0E: newOpCode(0x0E, "ASL", 3, 6, addressingMode_Absolute),
+	0x1E: newOpCode(0x1E, "ASL", 3, 7, addressingMode_AbsoluteX),
 	// BCC
-	0x90: NewOpCode(0x90, "BCC", 2, 2 /*(+1 if branch succeeds, +2 if to a new page)*/, AddressingMode_Relative),
+	0x90: newOpCode(0x90, "BCC", 2, 2 /*(+1 if branch succeeds, +2 if to a new page)*/, addressingMode_Relative),
 	// BCS
-	0xB0: NewOpCode(0xB0, "BCS", 2, 2 /*(+1 if branch succeeds, +2 if to a new page)*/, AddressingMode_Relative),
+	0xB0: newOpCode(0xB0, "BCS", 2, 2 /*(+1 if branch succeeds, +2 if to a new page)*/, addressingMode_Relative),
 	// BEQ
-	0xF0: NewOpCode(0xF0, "BEQ", 2, 2 /*(+1 if branch succeeds, +2 if to a new page)*/, AddressingMode_Relative),
+	0xF0: newOpCode(0xF0, "BEQ", 2, 2 /*(+1 if branch succeeds, +2 if to a new page)*/, addressingMode_Relative),
 	// BIT
-	0x24: NewOpCode(0x24, "BIT", 2, 3, AddressingMode_ZeroPage),
-	0x2C: NewOpCode(0x2C, "BIT", 3, 4, AddressingMode_Absolute),
+	0x24: newOpCode(0x24, "BIT", 2, 3, addressingMode_ZeroPage),
+	0x2C: newOpCode(0x2C, "BIT", 3, 4, addressingMode_Absolute),
 	// BMI
-	0x30: NewOpCode(0x30, "BMI", 2, 2 /*(+1 if branch succeeds, +2 if to a new page)*/, AddressingMode_Relative),
+	0x30: newOpCode(0x30, "BMI", 2, 2 /*(+1 if branch succeeds, +2 if to a new page)*/, addressingMode_Relative),
 	// BNE
-	0xD0: NewOpCode(0xD0, "BNE", 2, 2 /*(+1 if branch succeeds, +2 if to a new page)*/, AddressingMode_Relative),
+	0xD0: newOpCode(0xD0, "BNE", 2, 2 /*(+1 if branch succeeds, +2 if to a new page)*/, addressingMode_Relative),
 	// BPL
-	0x10: NewOpCode(0x10, "BPL", 2, 2 /*(+1 if branch succeeds, +2 if to a new page)*/, AddressingMode_Relative),
+	0x10: newOpCode(0x10, "BPL", 2, 2 /*(+1 if branch succeeds, +2 if to a new page)*/, addressingMode_Relative),
 	// BRK
-	0x00: NewOpCode(0x00, "BRK", 1, 7, AddressingMode_Implied),
+	0x00: newOpCode(0x00, "BRK", 1, 7, addressingMode_Implied),
 	// BVC
-	0x50: NewOpCode(0x50, "BVC", 2, 2 /*(+1 if branch succeeds, +2 if to a new page)*/, AddressingMode_Relative),
+	0x50: newOpCode(0x50, "BVC", 2, 2 /*(+1 if branch succeeds, +2 if to a new page)*/, addressingMode_Relative),
 	// BVS
-	0x70: NewOpCode(0x70, "BVS", 2, 2 /*(+1 if branch succeeds, +2 if to a new page)*/, AddressingMode_Relative),
+	0x70: newOpCode(0x70, "BVS", 2, 2 /*(+1 if branch succeeds, +2 if to a new page)*/, addressingMode_Relative),
 	// CLC
-	0x18: NewOpCode(0x18, "CLC", 1, 2, AddressingMode_Implied),
+	0x18: newOpCode(0x18, "CLC", 1, 2, addressingMode_Implied),
 	// CLD
-	0xD8: NewOpCode(0xD8, "CLD", 1, 2, AddressingMode_Implied),
+	0xD8: newOpCode(0xD8, "CLD", 1, 2, addressingMode_Implied),
 	// CLI
-	0x58: NewOpCode(0x58, "CLI", 1, 2, AddressingMode_Implied),
+	0x58: newOpCode(0x58, "CLI", 1, 2, addressingMode_Implied),
 	// CLV
-	0xB8: NewOpCode(0xB8, "CLV", 1, 2, AddressingMode_Implied),
+	0xB8: newOpCode(0xB8, "CLV", 1, 2, addressingMode_Implied),
 	// CMP
-	0xC9: NewOpCode(0xC9, "CMP", 2, 2, AddressingMode_Immediate),
-	0xC5: NewOpCode(0xC5, "CMP", 2, 3, AddressingMode_ZeroPage),
-	0xD5: NewOpCode(0xD5, "CMP", 2, 4, AddressingMode_ZeroPageX),
-	0xCD: NewOpCode(0xCD, "CMP", 3, 4, AddressingMode_Absolute),
-	0xDD: NewOpCode(0xDD, "CMP", 3, 4 /*(+1 if page crossed)*/, AddressingMode_AbsoluteX),
-	0xD9: NewOpCode(0xD9, "CMP", 3, 4 /*(+1 if page crossed)*/, AddressingMode_AbsoluteY),
-	0xC1: NewOpCode(0xC1, "CMP", 2, 6, AddressingMode_IndirectX),
-	0xD1: NewOpCode(0xD1, "CMP", 2, 5 /*(+1 if page crossed)*/, AddressingMode_IndirectY),
+	0xC9: newOpCode(0xC9, "CMP", 2, 2, addressingMode_Immediate),
+	0xC5: newOpCode(0xC5, "CMP", 2, 3, addressingMode_ZeroPage),
+	0xD5: newOpCode(0xD5, "CMP", 2, 4, addressingMode_ZeroPageX),
+	0xCD: newOpCode(0xCD, "CMP", 3, 4, addressingMode_Absolute),
+	0xDD: newOpCode(0xDD, "CMP", 3, 4 /*(+1 if page crossed)*/, addressingMode_AbsoluteX),
+	0xD9: newOpCode(0xD9, "CMP", 3, 4 /*(+1 if page crossed)*/, addressingMode_AbsoluteY),
+	0xC1: newOpCode(0xC1, "CMP", 2, 6, addressingMode_IndirectX),
+	0xD1: newOpCode(0xD1, "CMP", 2, 5 /*(+1 if page crossed)*/, addressingMode_IndirectY),
 	// CPX
-	0xE0: NewOpCode(0xE0, "CPX", 2, 2, AddressingMode_Immediate),
-	0xE4: NewOpCode(0xE4, "CPX", 2, 3, AddressingMode_ZeroPage),
-	0xEC: NewOpCode(0xEC, "CPX", 3, 4, AddressingMode_Absolute),
+	0xE0: newOpCode(0xE0, "CPX", 2, 2, addressingMode_Immediate),
+	0xE4: newOpCode(0xE4, "CPX", 2, 3, addressingMode_ZeroPage),
+	0xEC: newOpCode(0xEC, "CPX", 3, 4, addressingMode_Absolute),
 	// CPY
-	0xC0: NewOpCode(0xC0, "CPY", 2, 2, AddressingMode_Immediate),
-	0xC4: NewOpCode(0xC4, "CPY", 2, 3, AddressingMode_ZeroPage),
-	0xCC: NewOpCode(0xCC, "CPY", 3, 4, AddressingMode_Absolute),
+	0xC0: newOpCode(0xC0, "CPY", 2, 2, addressingMode_Immediate),
+	0xC4: newOpCode(0xC4, "CPY", 2, 3, addressingMode_ZeroPage),
+	0xCC: newOpCode(0xCC, "CPY", 3, 4, addressingMode_Absolute),
 	// DEC
-	0xC6: NewOpCode(0xC6, "DEC", 2, 5, AddressingMode_ZeroPage),
-	0xD6: NewOpCode(0xD6, "DEC", 2, 6, AddressingMode_ZeroPageX),
-	0xCE: NewOpCode(0xCE, "DEC", 3, 6, AddressingMode_Absolute),
-	0xDE: NewOpCode(0xDE, "DEC", 3, 7, AddressingMode_AbsoluteX),
+	0xC6: newOpCode(0xC6, "DEC", 2, 5, addressingMode_ZeroPage),
+	0xD6: newOpCode(0xD6, "DEC", 2, 6, addressingMode_ZeroPageX),
+	0xCE: newOpCode(0xCE, "DEC", 3, 6, addressingMode_Absolute),
+	0xDE: newOpCode(0xDE, "DEC", 3, 7, addressingMode_AbsoluteX),
 	// DEX
-	0xCA: NewOpCode(0xCA, "DEX", 1, 2, AddressingMode_Implied),
+	0xCA: newOpCode(0xCA, "DEX", 1, 2, addressingMode_Implied),
 	// DEY
-	0x88: NewOpCode(0x88, "DEY", 1, 2, AddressingMode_Implied),
+	0x88: newOpCode(0x88, "DEY", 1, 2, addressingMode_Implied),
 	// EOR
-	0x49: NewOpCode(0x49, "EOR", 2, 2, AddressingMode_Immediate),
-	0x45: NewOpCode(0x45, "EOR", 2, 3, AddressingMode_ZeroPage),
-	0x55: NewOpCode(0x55, "EOR", 2, 4, AddressingMode_ZeroPageX),
-	0x4D: NewOpCode(0x4D, "EOR", 3, 4, AddressingMode_Absolute),
-	0x5D: NewOpCode(0x5D, "EOR", 3, 4 /*(+1 if page crossed)*/, AddressingMode_AbsoluteX),
-	0x59: NewOpCode(0x59, "EOR", 3, 4 /*(+1 if page crossed)*/, AddressingMode_AbsoluteY),
-	0x41: NewOpCode(0x41, "EOR", 2, 6, AddressingMode_IndirectX),
-	0x51: NewOpCode(0x51, "EOR", 2, 5 /*(+1 if page crossed)*/, AddressingMode_IndirectY),
+	0x49: newOpCode(0x49, "EOR", 2, 2, addressingMode_Immediate),
+	0x45: newOpCode(0x45, "EOR", 2, 3, addressingMode_ZeroPage),
+	0x55: newOpCode(0x55, "EOR", 2, 4, addressingMode_ZeroPageX),
+	0x4D: newOpCode(0x4D, "EOR", 3, 4, addressingMode_Absolute),
+	0x5D: newOpCode(0x5D, "EOR", 3, 4 /*(+1 if page crossed)*/, addressingMode_AbsoluteX),
+	0x59: newOpCode(0x59, "EOR", 3, 4 /*(+1 if page crossed)*/, addressingMode_AbsoluteY),
+	0x41: newOpCode(0x41, "EOR", 2, 6, addressingMode_IndirectX),
+	0x51: newOpCode(0x51, "EOR", 2, 5 /*(+1 if page crossed)*/, addressingMode_IndirectY),
 	// INC
-	0xE6: NewOpCode(0xE6, "INC", 2, 5, AddressingMode_ZeroPage),
-	0xF6: NewOpCode(0xF6, "INC", 2, 6, AddressingMode_ZeroPageX),
-	0xEE: NewOpCode(0xEE, "INC", 3, 6, AddressingMode_Absolute),
-	0xFE: NewOpCode(0xFE, "INC", 3, 7, AddressingMode_AbsoluteX),
+	0xE6: newOpCode(0xE6, "INC", 2, 5, addressingMode_ZeroPage),
+	0xF6: newOpCode(0xF6, "INC", 2, 6, addressingMode_ZeroPageX),
+	0xEE: newOpCode(0xEE, "INC", 3, 6, addressingMode_Absolute),
+	0xFE: newOpCode(0xFE, "INC", 3, 7, addressingMode_AbsoluteX),
 	// INX
-	0xE8: NewOpCode(0xE8, "INX", 1, 2, AddressingMode_Implied),
+	0xE8: newOpCode(0xE8, "INX", 1, 2, addressingMode_Implied),
 	// INY
-	0xC8: NewOpCode(0xC8, "INY", 1, 2, AddressingMode_Implied),
+	0xC8: newOpCode(0xC8, "INY", 1, 2, addressingMode_Implied),
 	// JMP
-	0x4C: NewOpCode(0x4C, "JMP", 3, 3, AddressingMode_Absolute),
-	0x6C: NewOpCode(0x6C, "JMP", 3, 5, AddressingMode_Indirect),
+	0x4C: newOpCode(0x4C, "JMP", 3, 3, addressingMode_Absolute),
+	0x6C: newOpCode(0x6C, "JMP", 3, 5, addressingMode_Indirect),
 	// JSR
-	0x20: NewOpCode(0x20, "JSR", 3, 6, AddressingMode_Absolute),
+	0x20: newOpCode(0x20, "JSR", 3, 6, addressingMode_Absolute),
 	// LDA
-	0xA9: NewOpCode(0xA9, "LDA", 2, 2, AddressingMode_Immediate),
-	0xA5: NewOpCode(0xA5, "LDA", 2, 3, AddressingMode_ZeroPage),
-	0xB5: NewOpCode(0xB5, "LDA", 2, 4, AddressingMode_ZeroPageX),
-	0xAD: NewOpCode(0xAD, "LDA", 3, 4, AddressingMode_Absolute),
-	0xBD: NewOpCode(0xBD, "LDA", 3, 4 /*(+1 if page crossed)*/, AddressingMode_AbsoluteX),
-	0xB9: NewOpCode(0xB9, "LDA", 3, 4 /*(+1 if page crossed)*/, AddressingMode_AbsoluteY),
-	0xA1: NewOpCode(0xA1, "LDA", 2, 6, AddressingMode_IndirectX),
-	0xB1: NewOpCode(0xB1, "LDA", 2, 5 /*(+1 if page crossed)*/, AddressingMode_IndirectY),
+	0xA9: newOpCode(0xA9, "LDA", 2, 2, addressingMode_Immediate),
+	0xA5: newOpCode(0xA5, "LDA", 2, 3, addressingMode_ZeroPage),
+	0xB5: newOpCode(0xB5, "LDA", 2, 4, addressingMode_ZeroPageX),
+	0xAD: newOpCode(0xAD, "LDA", 3, 4, addressingMode_Absolute),
+	0xBD: newOpCode(0xBD, "LDA", 3, 4 /*(+1 if page crossed)*/, addressingMode_AbsoluteX),
+	0xB9: newOpCode(0xB9, "LDA", 3, 4 /*(+1 if page crossed)*/, addressingMode_AbsoluteY),
+	0xA1: newOpCode(0xA1, "LDA", 2, 6, addressingMode_IndirectX),
+	0xB1: newOpCode(0xB1, "LDA", 2, 5 /*(+1 if page crossed)*/, addressingMode_IndirectY),
 	// LDX
-	0xA2: NewOpCode(0xA2, "LDX", 2, 2, AddressingMode_Immediate),
-	0xA6: NewOpCode(0xA6, "LDX", 2, 3, AddressingMode_ZeroPage),
-	0xB6: NewOpCode(0xB6, "LDX", 2, 4, AddressingMode_ZeroPageY),
-	0xAE: NewOpCode(0xAE, "LDX", 3, 4, AddressingMode_Absolute),
-	0xBE: NewOpCode(0xBE, "LDX", 3, 4 /*(+1 if page crossed)*/, AddressingMode_AbsoluteY),
+	0xA2: newOpCode(0xA2, "LDX", 2, 2, addressingMode_Immediate),
+	0xA6: newOpCode(0xA6, "LDX", 2, 3, addressingMode_ZeroPage),
+	0xB6: newOpCode(0xB6, "LDX", 2, 4, addressingMode_ZeroPageY),
+	0xAE: newOpCode(0xAE, "LDX", 3, 4, addressingMode_Absolute),
+	0xBE: newOpCode(0xBE, "LDX", 3, 4 /*(+1 if page crossed)*/, addressingMode_AbsoluteY),
 	// LDY
-	0xA0: NewOpCode(0xA0, "LDY", 2, 2, AddressingMode_Immediate),
-	0xA4: NewOpCode(0xA4, "LDY", 2, 3, AddressingMode_ZeroPage),
-	0xB4: NewOpCode(0xB4, "LDY", 2, 4, AddressingMode_ZeroPageX),
-	0xAC: NewOpCode(0xAC, "LDY", 3, 4, AddressingMode_Absolute),
-	0xBC: NewOpCode(0xBC, "LDY", 3, 4 /*(+1 if page crossed)*/, AddressingMode_AbsoluteX),
+	0xA0: newOpCode(0xA0, "LDY", 2, 2, addressingMode_Immediate),
+	0xA4: newOpCode(0xA4, "LDY", 2, 3, addressingMode_ZeroPage),
+	0xB4: newOpCode(0xB4, "LDY", 2, 4, addressingMode_ZeroPageX),
+	0xAC: newOpCode(0xAC, "LDY", 3, 4, addressingMode_Absolute),
+	0xBC: newOpCode(0xBC, "LDY", 3, 4 /*(+1 if page crossed)*/, addressingMode_AbsoluteX),
 	// LSR
-	0x4A: NewOpCode(0x4A, "LSR", 1, 2, AddressingMode_Accumulator),
-	0x46: NewOpCode(0x46, "LSR", 2, 5, AddressingMode_ZeroPage),
-	0x56: NewOpCode(0x56, "LSR", 2, 6, AddressingMode_ZeroPageX),
-	0x4E: NewOpCode(0x4E, "LSR", 3, 6, AddressingMode_Absolute),
-	0x5E: NewOpCode(0x5E, "LSR", 3, 7, AddressingMode_AbsoluteX),
+	0x4A: newOpCode(0x4A, "LSR", 1, 2, addressingMode_Accumulator),
+	0x46: newOpCode(0x46, "LSR", 2, 5, addressingMode_ZeroPage),
+	0x56: newOpCode(0x56, "LSR", 2, 6, addressingMode_ZeroPageX),
+	0x4E: newOpCode(0x4E, "LSR", 3, 6, addressingMode_Absolute),
+	0x5E: newOpCode(0x5E, "LSR", 3, 7, addressingMode_AbsoluteX),
 	// NOP
-	0xEA: NewOpCode(0xEA, "NOP", 1, 2, AddressingMode_Implied),
+	0xEA: newOpCode(0xEA, "NOP", 1, 2, addressingMode_Implied),
 	// ORA
-	0x09: NewOpCode(0x09, "ORA", 2, 2, AddressingMode_Immediate),
-	0x05: NewOpCode(0x05, "ORA", 2, 3, AddressingMode_ZeroPage),
-	0x15: NewOpCode(0x15, "ORA", 2, 4, AddressingMode_ZeroPageX),
-	0x0D: NewOpCode(0x0D, "ORA", 3, 4, AddressingMode_Absolute),
-	0x1D: NewOpCode(0x1D, "ORA", 3, 4 /*(+1 if page crossed)*/, AddressingMode_AbsoluteX),
-	0x19: NewOpCode(0x19, "ORA", 3, 4 /*(+1 if page crossed)*/, AddressingMode_AbsoluteY),
-	0x01: NewOpCode(0x01, "ORA", 2, 6, AddressingMode_IndirectX),
-	0x11: NewOpCode(0x11, "ORA", 2, 5 /*(+1 if page crossed)*/, AddressingMode_IndirectY),
+	0x09: newOpCode(0x09, "ORA", 2, 2, addressingMode_Immediate),
+	0x05: newOpCode(0x05, "ORA", 2, 3, addressingMode_ZeroPage),
+	0x15: newOpCode(0x15, "ORA", 2, 4, addressingMode_ZeroPageX),
+	0x0D: newOpCode(0x0D, "ORA", 3, 4, addressingMode_Absolute),
+	0x1D: newOpCode(0x1D, "ORA", 3, 4 /*(+1 if page crossed)*/, addressingMode_AbsoluteX),
+	0x19: newOpCode(0x19, "ORA", 3, 4 /*(+1 if page crossed)*/, addressingMode_AbsoluteY),
+	0x01: newOpCode(0x01, "ORA", 2, 6, addressingMode_IndirectX),
+	0x11: newOpCode(0x11, "ORA", 2, 5 /*(+1 if page crossed)*/, addressingMode_IndirectY),
 	// PHA
-	0x48: NewOpCode(0x48, "PHA", 1, 3, AddressingMode_Implied),
+	0x48: newOpCode(0x48, "PHA", 1, 3, addressingMode_Implied),
 	// PHP
-	0x08: NewOpCode(0x08, "PHP", 1, 3, AddressingMode_Implied),
+	0x08: newOpCode(0x08, "PHP", 1, 3, addressingMode_Implied),
 	// PLA
-	0x68: NewOpCode(0x68, "PLA", 1, 4, AddressingMode_Implied),
+	0x68: newOpCode(0x68, "PLA", 1, 4, addressingMode_Implied),
 	// PLP
-	0x28: NewOpCode(0x28, "PLP", 1, 4, AddressingMode_Implied),
+	0x28: newOpCode(0x28, "PLP", 1, 4, addressingMode_Implied),
 	// ROL
-	0x2A: NewOpCode(0x2A, "ROL", 1, 2, AddressingMode_Accumulator),
-	0x26: NewOpCode(0x26, "ROL", 2, 5, AddressingMode_ZeroPage),
-	0x36: NewOpCode(0x36, "ROL", 2, 6, AddressingMode_ZeroPageX),
-	0x2E: NewOpCode(0x2E, "ROL", 3, 6, AddressingMode_Absolute),
-	0x3E: NewOpCode(0x3E, "ROL", 3, 7, AddressingMode_AbsoluteX),
+	0x2A: newOpCode(0x2A, "ROL", 1, 2, addressingMode_Accumulator),
+	0x26: newOpCode(0x26, "ROL", 2, 5, addressingMode_ZeroPage),
+	0x36: newOpCode(0x36, "ROL", 2, 6, addressingMode_ZeroPageX),
+	0x2E: newOpCode(0x2E, "ROL", 3, 6, addressingMode_Absolute),
+	0x3E: newOpCode(0x3E, "ROL", 3, 7, addressingMode_AbsoluteX),
 	// ROR
-	0x6A: NewOpCode(0x6A, "ROR", 1, 2, AddressingMode_Accumulator),
-	0x66: NewOpCode(0x66, "ROR", 2, 5, AddressingMode_ZeroPage),
-	0x76: NewOpCode(0x76, "ROR", 2, 6, AddressingMode_ZeroPageX),
-	0x6E: NewOpCode(0x6E, "ROR", 3, 6, AddressingMode_Absolute),
-	0x7E: NewOpCode(0x7E, "ROR", 3, 7, AddressingMode_AbsoluteX),
+	0x6A: newOpCode(0x6A, "ROR", 1, 2, addressingMode_Accumulator),
+	0x66: newOpCode(0x66, "ROR", 2, 5, addressingMode_ZeroPage),
+	0x76: newOpCode(0x76, "ROR", 2, 6, addressingMode_ZeroPageX),
+	0x6E: newOpCode(0x6E, "ROR", 3, 6, addressingMode_Absolute),
+	0x7E: newOpCode(0x7E, "ROR", 3, 7, addressingMode_AbsoluteX),
 	// RTI
-	0x40: NewOpCode(0x40, "RTI", 1, 6, AddressingMode_Implied),
+	0x40: newOpCode(0x40, "RTI", 1, 6, addressingMode_Implied),
 	// RTS
-	0x60: NewOpCode(0x60, "RTS", 1, 6, AddressingMode_Implied),
+	0x60: newOpCode(0x60, "RTS", 1, 6, addressingMode_Implied),
 	// SBC
-	0xE9: NewOpCode(0xE9, "SBC", 2, 2, AddressingMode_Immediate),
-	0xE5: NewOpCode(0xE5, "SBC", 2, 3, AddressingMode_ZeroPage),
-	0xF5: NewOpCode(0xF5, "SBC", 2, 4, AddressingMode_ZeroPageX),
-	0xED: NewOpCode(0xED, "SBC", 3, 4, AddressingMode_Absolute),
-	0xFD: NewOpCode(0xFD, "SBC", 3, 4 /*(+1 if page crossed)*/, AddressingMode_AbsoluteX),
-	0xF9: NewOpCode(0xF9, "SBC", 3, 4 /*(+1 if page crossed)*/, AddressingMode_AbsoluteY),
-	0xE1: NewOpCode(0xE1, "SBC", 2, 6, AddressingMode_IndirectX),
-	0xF1: NewOpCode(0xF1, "SBC", 2, 5 /*(+1 if page crossed)*/, AddressingMode_IndirectY),
+	0xE9: newOpCode(0xE9, "SBC", 2, 2, addressingMode_Immediate),
+	0xE5: newOpCode(0xE5, "SBC", 2, 3, addressingMode_ZeroPage),
+	0xF5: newOpCode(0xF5, "SBC", 2, 4, addressingMode_ZeroPageX),
+	0xED: newOpCode(0xED, "SBC", 3, 4, addressingMode_Absolute),
+	0xFD: newOpCode(0xFD, "SBC", 3, 4 /*(+1 if page crossed)*/, addressingMode_AbsoluteX),
+	0xF9: newOpCode(0xF9, "SBC", 3, 4 /*(+1 if page crossed)*/, addressingMode_AbsoluteY),
+	0xE1: newOpCode(0xE1, "SBC", 2, 6, addressingMode_IndirectX),
+	0xF1: newOpCode(0xF1, "SBC", 2, 5 /*(+1 if page crossed)*/, addressingMode_IndirectY),
 	// SEC
-	0x38: NewOpCode(0x38, "SEC", 1, 2, AddressingMode_Implied),
+	0x38: newOpCode(0x38, "SEC", 1, 2, addressingMode_Implied),
 	// SED
-	0xF8: NewOpCode(0xF8, "SED", 1, 2, AddressingMode_Implied),
+	0xF8: newOpCode(0xF8, "SED", 1, 2, addressingMode_Implied),
 	// SEI
-	0x78: NewOpCode(0x78, "SEI", 1, 2, AddressingMode_Implied),
+	0x78: newOpCode(0x78, "SEI", 1, 2, addressingMode_Implied),
 	// STA
-	0x85: NewOpCode(0x85, "STA", 2, 3, AddressingMode_ZeroPage),
-	0x95: NewOpCode(0x95, "STA", 2, 4, AddressingMode_ZeroPageX),
-	0x8D: NewOpCode(0x8D, "STA", 3, 4, AddressingMode_Absolute),
-	0x9D: NewOpCode(0x9D, "STA", 3, 5, AddressingMode_AbsoluteX),
-	0x99: NewOpCode(0x99, "STA", 3, 5, AddressingMode_AbsoluteY),
-	0x81: NewOpCode(0x81, "STA", 2, 6, AddressingMode_IndirectX),
-	0x91: NewOpCode(0x91, "STA", 2, 6, AddressingMode_IndirectY),
+	0x85: newOpCode(0x85, "STA", 2, 3, addressingMode_ZeroPage),
+	0x95: newOpCode(0x95, "STA", 2, 4, addressingMode_ZeroPageX),
+	0x8D: newOpCode(0x8D, "STA", 3, 4, addressingMode_Absolute),
+	0x9D: newOpCode(0x9D, "STA", 3, 5, addressingMode_AbsoluteX),
+	0x99: newOpCode(0x99, "STA", 3, 5, addressingMode_AbsoluteY),
+	0x81: newOpCode(0x81, "STA", 2, 6, addressingMode_IndirectX),
+	0x91: newOpCode(0x91, "STA", 2, 6, addressingMode_IndirectY),
 	// STX
-	0x86: NewOpCode(0x86, "STX", 2, 3, AddressingMode_ZeroPage),
-	0x96: NewOpCode(0x96, "STX", 2, 4, AddressingMode_ZeroPageY),
-	0x8E: NewOpCode(0x8E, "STX", 3, 4, AddressingMode_Absolute),
+	0x86: newOpCode(0x86, "STX", 2, 3, addressingMode_ZeroPage),
+	0x96: newOpCode(0x96, "STX", 2, 4, addressingMode_ZeroPageY),
+	0x8E: newOpCode(0x8E, "STX", 3, 4, addressingMode_Absolute),
 	// STY
-	0x84: NewOpCode(0x84, "STY", 2, 3, AddressingMode_ZeroPage),
-	0x94: NewOpCode(0x94, "STY", 2, 4, AddressingMode_ZeroPageX),
-	0x8C: NewOpCode(0x8C, "STY", 3, 4, AddressingMode_Absolute),
+	0x84: newOpCode(0x84, "STY", 2, 3, addressingMode_ZeroPage),
+	0x94: newOpCode(0x94, "STY", 2, 4, addressingMode_ZeroPageX),
+	0x8C: newOpCode(0x8C, "STY", 3, 4, addressingMode_Absolute),
 	// TAX
-	0xAA: NewOpCode(0xAA, "TAX", 1, 2, AddressingMode_Implied),
+	0xAA: newOpCode(0xAA, "TAX", 1, 2, addressingMode_Implied),
 	// TAY
-	0xA8: NewOpCode(0xA8, "TAY", 1, 2, AddressingMode_Implied),
+	0xA8: newOpCode(0xA8, "TAY", 1, 2, addressingMode_Implied),
 	// TSX
-	0xBA: NewOpCode(0xBA, "TSX", 1, 2, AddressingMode_Implied),
+	0xBA: newOpCode(0xBA, "TSX", 1, 2, addressingMode_Implied),
 	// TXA
-	0x8A: NewOpCode(0x8A, "TXA", 1, 2, AddressingMode_Implied),
+	0x8A: newOpCode(0x8A, "TXA", 1, 2, addressingMode_Implied),
 	// TXS
-	0x9A: NewOpCode(0x9A, "TXS", 1, 2, AddressingMode_Implied),
+	0x9A: newOpCode(0x9A, "TXS", 1, 2, addressingMode_Implied),
 	// TYA
-	0x98: NewOpCode(0x98, "TYA", 1, 2, AddressingMode_Implied),
+	0x98: newOpCode(0x98, "TYA", 1, 2, addressingMode_Implied),
 }

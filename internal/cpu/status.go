@@ -13,27 +13,27 @@ package cpu
 
 https://www.nesdev.org/wiki/Status_flags
 */
-type Status uint8
+type status uint8
 
-func NewStatus() Status {
+func newStatus() status {
 	return 0b0000_0000
 }
 
 // Get Carry flag
-func (s *Status) C() bool {
+func (s *status) c() bool {
 	return (*s & 0b0000_0001) == 0b0000_0001
 }
 
 // Set Carry flag
-func (s *Status) SetC(c bool) {}
+func (s *status) setC(c bool) {}
 
 // Get Zero flag
-func (s *Status) Z() bool {
+func (s *status) z() bool {
 	return (*s & 0b0000_0010) == 0b0000_0010
 }
 
 // Set Zero flag
-func (s *Status) SetZ(z bool) {
+func (s *status) setZ(z bool) {
 	if z {
 		// Set Zero flag
 		*s = *s | 0b0000_0010
@@ -44,44 +44,44 @@ func (s *Status) SetZ(z bool) {
 }
 
 // Get Interrupt Disable flag
-func (s *Status) I() bool {
+func (s *status) i() bool {
 	return (*s & 0b0000_0100) == 0b0000_0100
 }
 
 // Set Interrupt Disable flag
-func (s *Status) SetI() {}
+func (s *status) setI() {}
 
 // Get Decimal flag
-func (s *Status) D() bool {
+func (s *status) d() bool {
 	return (*s & 0b0000_1000) == 0b0000_1000
 }
 
 // Set Decimal flag
-func (s *Status) SetD() {}
+func (s *status) setD() {}
 
-// Get B flag
-func (s *Status) B() bool {
+// Get b flag
+func (s *status) b() bool {
 	return (*s & 0b0001_0000) == 0b0001_0000
 }
 
 // Set B flag
-func (s *Status) SetB() {}
+func (s *status) setB() {}
 
 // Get Overflow flag
-func (s *Status) O() bool {
+func (s *status) o() bool {
 	return (*s & 0b0100_0000) == 0b0100_0000
 }
 
 // Set Overflow flag
-func (s *Status) SetO() {}
+func (s *status) setO() {}
 
 // Get Negative flag
-func (s *Status) N() bool {
+func (s *status) n() bool {
 	return (*s & 0b1000_0000) == 0b1000_0000
 }
 
 // Set Negative flag
-func (s *Status) SetN(n bool) {
+func (s *status) setN(n bool) {
 	if n {
 		// Set Negative flag
 		*s = *s | 0b1000_0000
