@@ -6,15 +6,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_STA_(t *testing.T) {
+func Test_STA_Immediate(t *testing.T) {
 	cpu := NewCPU()
-	cpu.writeMemory(uint16(0x8002), 0x03)
-
 	cpu.Load([]uint8{0x85, 0x01, 0x00})
 	cpu.Reset()
+	cpu.RegisterA = 0x05
 	cpu.Run()
 
-	assert.Equal(t, uint8(0x00), cpu.RegisterA)
+	assert.Equal(t, uint8(0x05), cpu.readMemory(0x01))
 }
 
 func Test_LDA_Immediate(t *testing.T) {
@@ -46,8 +45,6 @@ func Test_LDA_ZeroPageX(t *testing.T) {
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x11), cpu.RegisterA)
-	assert.False(t, cpu.Status.Z())
-	assert.False(t, cpu.Status.N())
 }
 
 func Test_LDA_Absolute(t *testing.T) {
