@@ -12,7 +12,7 @@ func main() {
 		os.Exit(failure)
 	}
 
-	os.Exit(0)
+	os.Exit(success)
 }
 
 func run() error {

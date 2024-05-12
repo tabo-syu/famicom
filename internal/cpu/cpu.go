@@ -7,7 +7,7 @@ type CPU struct {
 	RegisterY      uint8
 	Status         Status
 
-	memory [0xFF_FF]uint8
+	memory [0x1_00_00]uint8
 }
 
 type AddressingMode int
@@ -27,9 +27,9 @@ const (
 
 func NewCPU() CPU {
 	return CPU{
-		ProgramCounter: 0b0000_0000,
-		RegisterA:      0b0000_0000,
-		RegisterX:      0b0000_0000,
+		ProgramCounter: 0,
+		RegisterA:      0,
+		RegisterX:      0,
 		Status:         NewStatus(),
 	}
 }
@@ -62,11 +62,12 @@ func (cpu *CPU) Load(program []uint8) {
 	cpu.writeMemoryUint16(0xFF_FC, 0x80_00)
 }
 
-func (cpu *CPU) Reset(registerA uint8, registerX uint8) {
-	cpu.RegisterA = registerA
-	cpu.RegisterX = registerX
+func (cpu *CPU) Reset() {
+	cpu.RegisterA = 0
+	cpu.RegisterX = 0
 	cpu.Status = NewStatus()
 
+	// 0x80_00
 	cpu.ProgramCounter = cpu.readMemoryUint16(0xFF_FC)
 }
 
@@ -110,8 +111,9 @@ func (cpu *CPU) getOperandAddress(mode AddressingMode) uint16 {
 		pointer := base + cpu.RegisterX
 		low := cpu.readMemory(uint16(pointer))
 		high := cpu.readMemory(uint16(pointer + 1))
+		address := uint16(high)<<8 | uint16(low)
 
-		return uint16(high)<<8 | uint16(low)
+		return address
 
 	case AddressingMode_IndirectY:
 		base := cpu.readMemory(cpu.ProgramCounter)
@@ -230,7 +232,7 @@ func (cpu *CPU) Run() {
 
 func (cpu *CPU) loadAndRun(program []uint8) {
 	cpu.Load(program)
-	cpu.Reset(0, 0)
+	cpu.Reset()
 	cpu.Run()
 }
 
@@ -264,7 +266,7 @@ func (cpu *CPU) updateZeroAndNegativeFlags(register uint8) {
 		cpu.Status.SetZ(false)
 	}
 
-	if register&0b1000_000 != 0 {
+	if register&0b0100_0000 != 0 {
 		cpu.Status.SetN(true)
 	} else {
 		cpu.Status.SetN(false)
