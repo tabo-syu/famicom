@@ -13,7 +13,7 @@ func Test_STA_Immediate(t *testing.T) {
 	cpu.RegisterA = 0x05
 	cpu.Run()
 
-	assert.Equal(t, uint8(0x05), cpu.readMemory(0x01))
+	assert.Equal(t, uint8(0x05), cpu.memory.Read(0x01))
 }
 
 func Test_LDA_Immediate(t *testing.T) {
@@ -30,7 +30,7 @@ func Test_LDA_ZeroPage(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0xA5, 0x05, 0x00})
 	cpu.Reset()
-	cpu.writeMemory(0x05, 0x11)
+	cpu.memory.Write(0x05, 0x11)
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x11), cpu.RegisterA)
@@ -41,7 +41,7 @@ func Test_LDA_ZeroPageX(t *testing.T) {
 	cpu.Load([]uint8{0xB5, 0x05, 0x00})
 	cpu.Reset()
 	cpu.RegisterX = 0x01
-	cpu.writeMemory(0x06, 0x11)
+	cpu.memory.Write(0x06, 0x11)
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x11), cpu.RegisterA)
@@ -51,7 +51,7 @@ func Test_LDA_Absolute(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0xAD, 0x11, 0x12, 0x00})
 	cpu.Reset()
-	cpu.writeMemoryUint16(0x12_11, 0x13)
+	cpu.memory.WriteUint16(0x12_11, 0x13)
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x13), cpu.RegisterA)
@@ -62,7 +62,7 @@ func Test_LDA_AbsoluteX(t *testing.T) {
 	cpu.Load([]uint8{0xBD, 0x11, 0x12, 0x00})
 	cpu.Reset()
 	cpu.RegisterX = 0x01
-	cpu.writeMemoryUint16(0x12_12, 0x13)
+	cpu.memory.WriteUint16(0x12_12, 0x13)
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x13), cpu.RegisterA)
@@ -73,7 +73,7 @@ func Test_LDA_AbsoluteY(t *testing.T) {
 	cpu.Load([]uint8{0xB9, 0x11, 0x12, 0x00})
 	cpu.Reset()
 	cpu.RegisterY = 0x01
-	cpu.writeMemoryUint16(0x12_12, 0x13)
+	cpu.memory.WriteUint16(0x12_12, 0x13)
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x13), cpu.RegisterA)
@@ -84,8 +84,8 @@ func Test_LDA_IndirectX(t *testing.T) {
 	cpu.Load([]uint8{0xA1, 0x11, 0x00})
 	cpu.Reset()
 	cpu.RegisterX = 0x01
-	cpu.writeMemoryUint16(0x12, 0x13_14)
-	cpu.writeMemoryUint16(0x13_14, 0x05)
+	cpu.memory.WriteUint16(0x12, 0x13_14)
+	cpu.memory.WriteUint16(0x13_14, 0x05)
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x05), cpu.RegisterA)
@@ -96,9 +96,9 @@ func Test_LDA_IndirectY(t *testing.T) {
 	cpu.Load([]uint8{0xB1, 0x11, 0x00})
 	cpu.Reset()
 	cpu.RegisterY = 0x01
-	cpu.writeMemory(0x11, 0x31)
-	cpu.writeMemory(0x12, 0x32)
-	cpu.writeMemory(0x32_32, 0x05)
+	cpu.memory.Write(0x11, 0x31)
+	cpu.memory.Write(0x12, 0x32)
+	cpu.memory.Write(0x32_32, 0x05)
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x05), cpu.RegisterA)

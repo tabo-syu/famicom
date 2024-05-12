@@ -1,5 +1,7 @@
 package cpu
 
+import "github.com/tabo-syu/famicom/internal/memory"
+
 type CPU struct {
 	ProgramCounter uint16
 	RegisterA      uint8
@@ -7,7 +9,7 @@ type CPU struct {
 	RegisterY      uint8
 	Status         Status
 
-	memory [0x1_00_00]uint8
+	memory memory.Memory
 }
 
 type AddressingMode int
@@ -31,35 +33,13 @@ func NewCPU() CPU {
 		RegisterA:      0,
 		RegisterX:      0,
 		Status:         NewStatus(),
+		memory:         memory.NewMemory(),
 	}
-}
-
-func (cpu *CPU) readMemory(address uint16) uint8 {
-	return cpu.memory[address]
-}
-
-func (cpu *CPU) writeMemory(address uint16, data uint8) {
-	cpu.memory[address] = data
-}
-
-func (cpu *CPU) readMemoryUint16(position uint16) uint16 {
-	low := uint16(cpu.readMemory(position))
-	high := uint16(cpu.readMemory(position + 1))
-
-	return high<<8 | low
-}
-
-func (cpu *CPU) writeMemoryUint16(position uint16, data uint16) {
-	high := uint8(data >> 8)
-	low := uint8(data & 0x00_FF)
-
-	cpu.writeMemory(position, low)
-	cpu.writeMemory(position+1, high)
 }
 
 func (cpu *CPU) Load(program []uint8) {
 	copy(cpu.memory[0x8000:], program)
-	cpu.writeMemoryUint16(0xFF_FC, 0x80_00)
+	cpu.memory.WriteUint16(0xFF_FC, 0x80_00)
 }
 
 func (cpu *CPU) Reset() {
@@ -68,7 +48,7 @@ func (cpu *CPU) Reset() {
 	cpu.Status = NewStatus()
 
 	// 0x80_00
-	cpu.ProgramCounter = cpu.readMemoryUint16(0xFF_FC)
+	cpu.ProgramCounter = cpu.memory.ReadUint16(0xFF_FC)
 }
 
 func (cpu *CPU) getOperandAddress(mode AddressingMode) uint16 {
@@ -77,48 +57,48 @@ func (cpu *CPU) getOperandAddress(mode AddressingMode) uint16 {
 		return cpu.ProgramCounter
 
 	case AddressingMode_ZeroPage:
-		return uint16(cpu.readMemory(cpu.ProgramCounter))
+		return uint16(cpu.memory.Read(cpu.ProgramCounter))
 
 	case AddressingMode_ZeroPageX:
-		position := cpu.readMemory(cpu.ProgramCounter)
+		position := cpu.memory.Read(cpu.ProgramCounter)
 		address := uint16(position + cpu.RegisterX)
 
 		return address
 
 	case AddressingMode_ZeroPageY:
-		position := cpu.readMemory(cpu.ProgramCounter)
+		position := cpu.memory.Read(cpu.ProgramCounter)
 		address := uint16(position + cpu.RegisterY)
 
 		return address
 
 	case AddressingMode_Absolute:
-		return cpu.readMemoryUint16(cpu.ProgramCounter)
+		return cpu.memory.ReadUint16(cpu.ProgramCounter)
 
 	case AddressingMode_AbsoluteX:
-		base := cpu.readMemoryUint16(cpu.ProgramCounter)
+		base := cpu.memory.ReadUint16(cpu.ProgramCounter)
 		address := base + uint16(cpu.RegisterX)
 
 		return address
 
 	case AddressingMode_AbsoluteY:
-		base := cpu.readMemoryUint16(cpu.ProgramCounter)
+		base := cpu.memory.ReadUint16(cpu.ProgramCounter)
 		address := base + uint16(cpu.RegisterY)
 
 		return address
 
 	case AddressingMode_IndirectX:
-		base := cpu.readMemory(cpu.ProgramCounter)
+		base := cpu.memory.Read(cpu.ProgramCounter)
 		pointer := base + cpu.RegisterX
-		low := cpu.readMemory(uint16(pointer))
-		high := cpu.readMemory(uint16(pointer + 1))
+		low := cpu.memory.Read(uint16(pointer))
+		high := cpu.memory.Read(uint16(pointer + 1))
 		address := uint16(high)<<8 | uint16(low)
 
 		return address
 
 	case AddressingMode_IndirectY:
-		base := cpu.readMemory(cpu.ProgramCounter)
-		low := cpu.readMemory(uint16(base))
-		high := cpu.readMemory(uint16(base + 1))
+		base := cpu.memory.Read(cpu.ProgramCounter)
+		low := cpu.memory.Read(uint16(base))
+		high := cpu.memory.Read(uint16(base + 1))
 		derefBase := uint16(high)<<8 | uint16(low)
 		deref := derefBase + uint16(cpu.RegisterY)
 
@@ -134,7 +114,7 @@ func (cpu *CPU) getOperandAddress(mode AddressingMode) uint16 {
 
 func (cpu *CPU) Run() {
 	for {
-		opscode := cpu.readMemory(cpu.ProgramCounter)
+		opscode := cpu.memory.Read(cpu.ProgramCounter)
 		cpu.ProgramCounter++
 
 		switch opscode {
@@ -238,12 +218,12 @@ func (cpu *CPU) loadAndRun(program []uint8) {
 
 func (cpu *CPU) sta(mode AddressingMode) {
 	address := cpu.getOperandAddress(mode)
-	cpu.writeMemory(address, cpu.RegisterA)
+	cpu.memory.Write(address, cpu.RegisterA)
 }
 
 func (cpu *CPU) lda(mode AddressingMode) {
 	address := cpu.getOperandAddress(mode)
-	value := cpu.readMemory(address)
+	value := cpu.memory.Read(address)
 
 	cpu.RegisterA = value
 	cpu.updateZeroAndNegativeFlags(cpu.RegisterA)
