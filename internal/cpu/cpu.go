@@ -15,13 +15,17 @@ type CPU struct {
 type AddressingMode int
 
 const (
-	AddressingMode_Immediate AddressingMode = iota
+	AddressingMode_Implied AddressingMode = iota
+	AddressingMode_Accumulator
+	AddressingMode_Immediate
 	AddressingMode_ZeroPage
 	AddressingMode_ZeroPageX
 	AddressingMode_ZeroPageY
+	AddressingMode_Relative
 	AddressingMode_Absolute
 	AddressingMode_AbsoluteX
 	AddressingMode_AbsoluteY
+	AddressingMode_Indirect
 	AddressingMode_IndirectX
 	AddressingMode_IndirectY
 	AddressingMode_NoneAddressing

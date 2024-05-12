@@ -1,4 +1,5 @@
 //go:generate go run .
+//go:generate gofmt -w ../../
 package main
 
 import (
@@ -30,6 +31,20 @@ var opcodesTmpl string
 func run() error {
 	ops, err := scrape()
 	if err != nil {
+		return err
+	}
+
+	tmpl, err := template.New("opcodes").Parse(opcodesTmpl)
+	if err != nil {
+		return err
+	}
+
+	file, err := os.Create("../../internal/cpu/opcodes.gen.go")
+	if err != nil {
+		return err
+	}
+
+	if err := tmpl.Execute(file, ops); err != nil {
 		return err
 	}
 
