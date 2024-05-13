@@ -5,6 +5,7 @@ package main
 import (
 	_ "embed"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"text/template"
@@ -19,6 +20,8 @@ const (
 
 func main() {
 	if err := run(); err != nil {
+		log.Println(err)
+
 		os.Exit(failure)
 	}
 
@@ -39,7 +42,7 @@ func run() error {
 		return err
 	}
 
-	file, err := os.Create("../../internal/cpu/opcodes.gen.go")
+	file, err := os.Create("../../internal/cpu/instructions.gen.go")
 	if err != nil {
 		return err
 	}
