@@ -274,6 +274,16 @@ func Test_TAY_MoveAtoY(t *testing.T) {
 	assert.Equal(t, cpu.registerY, uint8(0x10))
 }
 
+func Test_TSX_MoveStoX(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xBA, 0x00})
+	cpu.Reset()
+	cpu.stackPointer = 0x10
+	cpu.Run()
+
+	assert.Equal(t, cpu.registerX, uint8(0x10))
+}
+
 func Test_TXA_MoveXtoA(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0x8A, 0x00})
@@ -282,6 +292,16 @@ func Test_TXA_MoveXtoA(t *testing.T) {
 	cpu.Run()
 
 	assert.Equal(t, cpu.registerA, uint8(0x10))
+}
+
+func Test_TXS_MoveXtoS(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x9A, 0x00})
+	cpu.Reset()
+	cpu.registerX = 0x10
+	cpu.Run()
+
+	assert.Equal(t, cpu.stackPointer, uint8(0x10))
 }
 
 func Test_TYA_MoveYtoA(t *testing.T) {

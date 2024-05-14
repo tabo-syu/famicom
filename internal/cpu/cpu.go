@@ -11,6 +11,7 @@ type CPU struct {
 	registerA      uint8
 	registerX      uint8
 	registerY      uint8
+	stackPointer   uint8
 	status         status
 
 	memory       memory.Memory
@@ -22,6 +23,8 @@ func NewCPU() CPU {
 		programCounter: 0,
 		registerA:      0,
 		registerX:      0,
+		registerY:      0,
+		stackPointer:   0,
 		status:         newStatus(),
 
 		memory:       memory.NewMemory(),
@@ -35,12 +38,13 @@ func (cpu *CPU) Load(program []uint8) {
 }
 
 func (cpu *CPU) Reset() {
-	cpu.registerA = 0
-	cpu.registerX = 0
-	cpu.status = newStatus()
-
 	// 0x80_00
 	cpu.programCounter = cpu.memory.ReadUint16(0xFF_FC)
+	cpu.registerA = 0
+	cpu.registerX = 0
+	cpu.registerY = 0
+	cpu.stackPointer = 0xFF
+	cpu.status = newStatus()
 }
 
 func (cpu *CPU) Run() {

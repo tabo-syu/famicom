@@ -90,9 +90,22 @@ func (cpu *CPU) TAY(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) TSX(mode addressingMode) error {
+	cpu.registerX = cpu.stackPointer
+	cpu.updateZeroAndNegativeFlags(cpu.registerX)
+
+	return nil
+}
+
 func (cpu *CPU) TXA(mode addressingMode) error {
 	cpu.registerA = cpu.registerX
 	cpu.updateZeroAndNegativeFlags(cpu.registerA)
+
+	return nil
+}
+
+func (cpu *CPU) TXS(mode addressingMode) error {
+	cpu.stackPointer = cpu.registerX
 
 	return nil
 }

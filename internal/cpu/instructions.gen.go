@@ -120,12 +120,12 @@ func (i instruction) Call(cpu *CPU) error {
 		err = cpu.TAX(i.mode)
 	case "TAY":
 		err = cpu.TAY(i.mode)
-	// case "TSX":
-	// 	err = cpu.TSX(i.mode)
+	case "TSX":
+		err = cpu.TSX(i.mode)
 	case "TXA":
 		err = cpu.TXA(i.mode)
-	// case "TXS":
-	// 	err = cpu.TXS(i.mode)
+	case "TXS":
+		err = cpu.TXS(i.mode)
 	case "TYA":
 		err = cpu.TYA(i.mode)
 	default:
