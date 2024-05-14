@@ -274,6 +274,58 @@ func Test_TAX_MoveAtoX(t *testing.T) {
 	assert.Equal(t, cpu.registerA, uint8(0x10))
 }
 
+func Test_INC_SetZeroFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xE6, 0x01, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x01, 0xFF)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x00), cpu.memory.Read(0x01))
+	assert.True(t, cpu.status.z())
+}
+
+func Test_INC_SetNegativeFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xE6, 0x01, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x01, 0b0011_1111)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x40), cpu.memory.Read(0x01))
+	assert.True(t, cpu.status.n())
+}
+
+func Test_INC_Increment(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xE6, 0x01, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x01, 0x02)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x03), cpu.memory.Read(0x01))
+}
+
+func Test_INC_Overflow(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xE6, 0x01, 0xE6, 0x01, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x01, 0xFF)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.memory.Read(0x01))
+}
+
+func Test_INX_Increment(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xE8, 0xE8, 0x00})
+	cpu.Reset()
+	cpu.registerX = 0x01
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x03), cpu.registerX)
+}
+
 func Test_INX_OverflowX(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0xE8, 0xE8, 0x00})
@@ -282,6 +334,26 @@ func Test_INX_OverflowX(t *testing.T) {
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x01), cpu.registerX)
+}
+
+func Test_INY_Increment(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xC8, 0xC8, 0x00})
+	cpu.Reset()
+	cpu.registerY = 0x01
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x03), cpu.registerY)
+}
+
+func Test_INY_OverflowY(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xC8, 0xC8, 0x00})
+	cpu.Reset()
+	cpu.registerY = 0xFF
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.registerY)
 }
 
 func Test_5OpsWorkingTogether(t *testing.T) {

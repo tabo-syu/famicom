@@ -69,9 +69,28 @@ func (cpu *CPU) TAX(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) INC(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+
+	value := cpu.memory.Read(address)
+	value++
+	cpu.memory.Write(address, value)
+
+	cpu.updateZeroAndNegativeFlags(value)
+
+	return nil
+}
+
 func (cpu *CPU) INX(mode addressingMode) error {
 	cpu.registerX++
 	cpu.updateZeroAndNegativeFlags(cpu.registerX)
+
+	return nil
+}
+
+func (cpu *CPU) INY(mode addressingMode) error {
+	cpu.registerY++
+	cpu.updateZeroAndNegativeFlags(cpu.registerY)
 
 	return nil
 }
@@ -137,14 +156,14 @@ func (cpu *CPU) getOperandAddress(mode addressingMode) uint16 {
 	}
 }
 
-func (cpu *CPU) updateZeroAndNegativeFlags(register uint8) {
-	if register == 0 {
+func (cpu *CPU) updateZeroAndNegativeFlags(value uint8) {
+	if value == 0 {
 		cpu.status.setZ(true)
 	} else {
 		cpu.status.setZ(false)
 	}
 
-	if register&0b0100_0000 != 0 {
+	if value&0b0100_0000 != 0 {
 		cpu.status.setN(true)
 	} else {
 		cpu.status.setN(false)

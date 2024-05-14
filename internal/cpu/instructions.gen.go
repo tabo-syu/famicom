@@ -72,10 +72,10 @@ func (i instruction) Call(cpu *CPU) error {
 	// 	err = cpu.DEY(i.mode)
 	// case "EOR":
 	// 	err = cpu.EOR(i.mode)
-	// case "INC":
-	// 	err = cpu.INC(i.mode)
-	// case "INY":
-	// 	err = cpu.INY(i.mode)
+	case "INC":
+		err = cpu.INC(i.mode)
+	case "INY":
+		err = cpu.INY(i.mode)
 	// case "JMP":
 	// 	err = cpu.JMP(i.mode)
 	// case "JSR":
