@@ -25,7 +25,15 @@ func (s *status) c() bool {
 }
 
 // Set Carry flag
-func (s *status) setC(c bool) {}
+func (s *status) setC(c bool) {
+	if c {
+		// Set Carry flag
+		*s = *s | 0b0000_0001
+	} else {
+		// Unset Carry flag
+		*s = *s & 0b1111_1110
+	}
+}
 
 // Get Zero flag
 func (s *status) z() bool {
@@ -49,7 +57,15 @@ func (s *status) i() bool {
 }
 
 // Set Interrupt Disable flag
-func (s *status) setI() {}
+func (s *status) setI(i bool) {
+	if i {
+		// Set Interrupt Disable flag
+		*s = *s | 0b0000_0100
+	} else {
+		// Unset Interrupt Disable flag
+		*s = *s & 0b1111_1011
+	}
+}
 
 // Get Decimal flag
 func (s *status) d() bool {
@@ -57,7 +73,15 @@ func (s *status) d() bool {
 }
 
 // Set Decimal flag
-func (s *status) setD() {}
+func (s *status) setD(d bool) {
+	if d {
+		// Set Decimal flag
+		*s = *s | 0b0000_1000
+	} else {
+		// Unset Decimal flag
+		*s = *s & 0b1111_0111
+	}
+}
 
 // Get b flag
 func (s *status) b() bool {

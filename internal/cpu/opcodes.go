@@ -25,6 +25,24 @@ func (cpu *CPU) BRK(mode addressingMode) error {
 	return errors.New("BRK called")
 }
 
+func (cpu *CPU) SEC(mode addressingMode) error {
+	cpu.status.setC(true)
+
+	return nil
+}
+
+func (cpu *CPU) SED(mode addressingMode) error {
+	cpu.status.setD(true)
+
+	return nil
+}
+
+func (cpu *CPU) SEI(mode addressingMode) error {
+	cpu.status.setI(true)
+
+	return nil
+}
+
 func (cpu *CPU) STA(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 	cpu.memory.Write(address, cpu.registerA)

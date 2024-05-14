@@ -488,6 +488,33 @@ func Test_STA_Immediate(t *testing.T) {
 	assert.Equal(t, uint8(0x05), cpu.memory.Read(0x01))
 }
 
+func Test_SEC_SetCarryFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x38, 0x00})
+	cpu.Reset()
+	cpu.Run()
+
+	assert.True(t, cpu.status.c())
+}
+
+func Test_SED_SetDecimalFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xF8, 0x00})
+	cpu.Reset()
+	cpu.Run()
+
+	assert.True(t, cpu.status.d())
+}
+
+func Test_SEI_SetInterruptDisable(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x78, 0x00})
+	cpu.Reset()
+	cpu.Run()
+
+	assert.True(t, cpu.status.i())
+}
+
 func Test_STX_Immediate(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0x86, 0x01, 0x00})
