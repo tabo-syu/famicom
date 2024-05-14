@@ -261,6 +261,36 @@ func Test_TAX_MoveAtoX(t *testing.T) {
 	cpu.registerA = 0x10
 	cpu.Run()
 
+	assert.Equal(t, cpu.registerX, uint8(0x10))
+}
+
+func Test_TAY_MoveAtoY(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xA8, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0x10
+	cpu.Run()
+
+	assert.Equal(t, cpu.registerY, uint8(0x10))
+}
+
+func Test_TXA_MoveXtoA(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x8A, 0x00})
+	cpu.Reset()
+	cpu.registerX = 0x10
+	cpu.Run()
+
+	assert.Equal(t, cpu.registerA, uint8(0x10))
+}
+
+func Test_TYA_MoveYtoA(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x98, 0x00})
+	cpu.Reset()
+	cpu.registerY = 0x10
+	cpu.Run()
+
 	assert.Equal(t, cpu.registerA, uint8(0x10))
 }
 

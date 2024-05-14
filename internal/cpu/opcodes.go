@@ -78,6 +78,27 @@ func (cpu *CPU) LDY(mode addressingMode) error {
 
 func (cpu *CPU) TAX(mode addressingMode) error {
 	cpu.registerX = cpu.registerA
+	cpu.updateZeroAndNegativeFlags(cpu.registerX)
+
+	return nil
+}
+
+func (cpu *CPU) TAY(mode addressingMode) error {
+	cpu.registerY = cpu.registerA
+	cpu.updateZeroAndNegativeFlags(cpu.registerY)
+
+	return nil
+}
+
+func (cpu *CPU) TXA(mode addressingMode) error {
+	cpu.registerA = cpu.registerX
+	cpu.updateZeroAndNegativeFlags(cpu.registerA)
+
+	return nil
+}
+
+func (cpu *CPU) TYA(mode addressingMode) error {
+	cpu.registerA = cpu.registerY
 	cpu.updateZeroAndNegativeFlags(cpu.registerA)
 
 	return nil

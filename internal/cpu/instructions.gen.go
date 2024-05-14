@@ -18,14 +18,6 @@ func (i instruction) Call(cpu *CPU) error {
 	switch i.opcode {
 	case "BRK":
 		err = cpu.BRK(i.mode)
-	case "STA":
-		err = cpu.STA(i.mode)
-	case "INX":
-		err = cpu.INX(i.mode)
-	case "LDA":
-		err = cpu.LDA(i.mode)
-	case "TAX":
-		err = cpu.TAX(i.mode)
 	// case "ADC":
 	// 	err = cpu.ADC(i.mode)
 	// case "AND":
@@ -74,12 +66,16 @@ func (i instruction) Call(cpu *CPU) error {
 	// 	err = cpu.EOR(i.mode)
 	case "INC":
 		err = cpu.INC(i.mode)
+	case "INX":
+		err = cpu.INX(i.mode)
 	case "INY":
 		err = cpu.INY(i.mode)
 	// case "JMP":
 	// 	err = cpu.JMP(i.mode)
 	// case "JSR":
 	// 	err = cpu.JSR(i.mode)
+	case "LDA":
+		err = cpu.LDA(i.mode)
 	case "LDX":
 		err = cpu.LDX(i.mode)
 	case "LDY":
@@ -114,20 +110,24 @@ func (i instruction) Call(cpu *CPU) error {
 	// 	err = cpu.SED(i.mode)
 	// case "SEI":
 	// 	err = cpu.SEI(i.mode)
+	case "STA":
+		err = cpu.STA(i.mode)
 	case "STX":
 		err = cpu.STX(i.mode)
 	case "STY":
 		err = cpu.STY(i.mode)
-	// case "TAY":
-	// 	err = cpu.TAY(i.mode)
+	case "TAX":
+		err = cpu.TAX(i.mode)
+	case "TAY":
+		err = cpu.TAY(i.mode)
 	// case "TSX":
 	// 	err = cpu.TSX(i.mode)
-	// case "TXA":
-	// 	err = cpu.TXA(i.mode)
+	case "TXA":
+		err = cpu.TXA(i.mode)
 	// case "TXS":
 	// 	err = cpu.TXS(i.mode)
-	// case "TYA":
-	// 	err = cpu.TYA(i.mode)
+	case "TYA":
+		err = cpu.TYA(i.mode)
 	default:
 		return errors.New("unexpected opcode")
 	}
