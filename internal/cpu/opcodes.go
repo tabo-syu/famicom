@@ -42,6 +42,26 @@ func (cpu *CPU) LDA(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) LDX(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+	value := cpu.memory.Read(address)
+
+	cpu.registerX = value
+	cpu.updateZeroAndNegativeFlags(cpu.registerX)
+
+	return nil
+}
+
+func (cpu *CPU) LDY(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+	value := cpu.memory.Read(address)
+
+	cpu.registerY = value
+	cpu.updateZeroAndNegativeFlags(cpu.registerY)
+
+	return nil
+}
+
 func (cpu *CPU) TAX(mode addressingMode) error {
 	cpu.registerX = cpu.registerA
 	cpu.updateZeroAndNegativeFlags(cpu.registerA)

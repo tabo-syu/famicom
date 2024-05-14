@@ -80,10 +80,10 @@ func (i instruction) Call(cpu *CPU) error {
 	// 	err = cpu.JMP(i.mode)
 	// case "JSR":
 	// 	err = cpu.JSR(i.mode)
-	// case "LDX":
-	// 	err = cpu.LDX(i.mode)
-	// case "LDY":
-	// 	err = cpu.LDY(i.mode)
+	case "LDX":
+		err = cpu.LDX(i.mode)
+	case "LDY":
+		err = cpu.LDY(i.mode)
 	// case "LSR":
 	// 	err = cpu.LSR(i.mode)
 	// case "NOP":

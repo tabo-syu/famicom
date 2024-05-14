@@ -6,6 +6,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TODO: Test Addressing mode
+// - AccumulatorMode
+// - RelativeMode
+// - IndirectMode
+
 func Test_STA_Immediate(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0x85, 0x01, 0x00})
@@ -14,6 +19,24 @@ func Test_STA_Immediate(t *testing.T) {
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x05), cpu.memory.Read(0x01))
+}
+
+func Test_LDA_SetZeroFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xA9, 0x00, 0x00})
+	cpu.Reset()
+	cpu.Run()
+
+	assert.True(t, cpu.status.z())
+}
+
+func Test_LDA_SetNegativeFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xA9, 0b0100_0000, 0x00})
+	cpu.Reset()
+	cpu.Run()
+
+	assert.True(t, cpu.status.n())
 }
 
 func Test_LDA_Immediate(t *testing.T) {
@@ -104,22 +127,141 @@ func Test_LDA_IndirectY(t *testing.T) {
 	assert.Equal(t, uint8(0x05), cpu.registerA)
 }
 
-func Test_LDA_SetZeroFlag(t *testing.T) {
+func Test_LDX_SetZeroFlag(t *testing.T) {
 	cpu := NewCPU()
-	cpu.Load([]uint8{0xA9, 0x00, 0x00})
+	cpu.Load([]uint8{0xA2, 0x00, 0x00})
 	cpu.Reset()
 	cpu.Run()
 
 	assert.True(t, cpu.status.z())
 }
 
-func Test_LDA_SetNegativeFlag(t *testing.T) {
+func Test_LDX_SetNegativeFlag(t *testing.T) {
 	cpu := NewCPU()
-	cpu.Load([]uint8{0xA9, 0b0100_0000, 0x00})
+	cpu.Load([]uint8{0xA2, 0b0100_0000, 0x00})
 	cpu.Reset()
 	cpu.Run()
 
 	assert.True(t, cpu.status.n())
+}
+
+func Test_LDX_Immediate(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xA2, 0x05, 0x00})
+	cpu.Reset()
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x05), cpu.registerX)
+}
+
+func Test_LDX_ZeroPage(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xA6, 0x05, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x05, 0x11)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x11), cpu.registerX)
+}
+
+func Test_LDX_ZeroPageY(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xB6, 0x05, 0x00})
+	cpu.Reset()
+	cpu.registerY = 0x01
+	cpu.memory.Write(0x06, 0x11)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x11), cpu.registerX)
+}
+
+func Test_LDX_Absolute(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xAE, 0x11, 0x12, 0x00})
+	cpu.Reset()
+	cpu.memory.WriteUint16(0x12_11, 0x13)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x13), cpu.registerX)
+}
+
+func Test_LDX_AbsoluteY(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xBE, 0x11, 0x12, 0x00})
+	cpu.Reset()
+	cpu.registerY = 0x01
+	cpu.memory.WriteUint16(0x12_12, 0x13)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x13), cpu.registerX)
+}
+
+func Test_LDY_SetZeroFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xA0, 0x00, 0x00})
+	cpu.Reset()
+	cpu.Run()
+
+	assert.True(t, cpu.status.z())
+}
+
+func Test_LDY_SetNegativeFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xA0, 0b0100_0000, 0x00})
+	cpu.Reset()
+	cpu.Run()
+
+	assert.True(t, cpu.status.n())
+}
+func Test_LDY_Immediate(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xA0, 0x05, 0x00})
+	cpu.Reset()
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x05), cpu.registerY)
+}
+
+func Test_LDY_ZeroPage(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xA4, 0x05, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x05, 0x11)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x11), cpu.registerY)
+}
+
+func Test_LDY_ZeroPageX(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xB4, 0x05, 0x00})
+	cpu.Reset()
+	cpu.registerX = 0x01
+	cpu.memory.Write(0x06, 0x11)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x11), cpu.registerY)
+}
+
+func Test_LDY_Absolute(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xAC, 0x11, 0x12, 0x00})
+	cpu.Reset()
+	cpu.memory.WriteUint16(0x12_11, 0x13)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x13), cpu.registerY)
+}
+
+func Test_LDY_AbsoluteX(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xBC, 0x11, 0x12, 0x00})
+	cpu.Reset()
+	cpu.registerX = 0x01
+	cpu.memory.WriteUint16(0x12_12, 0x13)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x13), cpu.registerY)
 }
 
 func Test_TAX_MoveAtoX(t *testing.T) {
