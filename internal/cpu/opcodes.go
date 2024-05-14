@@ -32,6 +32,20 @@ func (cpu *CPU) STA(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) STX(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+	cpu.memory.Write(address, cpu.registerX)
+
+	return nil
+}
+
+func (cpu *CPU) STY(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+	cpu.memory.Write(address, cpu.registerY)
+
+	return nil
+}
+
 func (cpu *CPU) LDA(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 	value := cpu.memory.Read(address)

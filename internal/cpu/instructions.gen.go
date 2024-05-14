@@ -114,10 +114,10 @@ func (i instruction) Call(cpu *CPU) error {
 	// 	err = cpu.SED(i.mode)
 	// case "SEI":
 	// 	err = cpu.SEI(i.mode)
-	// case "STX":
-	// 	err = cpu.STX(i.mode)
-	// case "STY":
-	// 	err = cpu.STY(i.mode)
+	case "STX":
+		err = cpu.STX(i.mode)
+	case "STY":
+		err = cpu.STY(i.mode)
 	// case "TAY":
 	// 	err = cpu.TAY(i.mode)
 	// case "TSX":

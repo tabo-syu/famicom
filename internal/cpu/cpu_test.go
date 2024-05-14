@@ -11,16 +11,6 @@ import (
 // - RelativeMode
 // - IndirectMode
 
-func Test_STA_Immediate(t *testing.T) {
-	cpu := NewCPU()
-	cpu.Load([]uint8{0x85, 0x01, 0x00})
-	cpu.Reset()
-	cpu.registerA = 0x05
-	cpu.Run()
-
-	assert.Equal(t, uint8(0x05), cpu.memory.Read(0x01))
-}
-
 func Test_LDA_SetZeroFlag(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0xA9, 0x00, 0x00})
@@ -354,6 +344,36 @@ func Test_INY_OverflowY(t *testing.T) {
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x01), cpu.registerY)
+}
+
+func Test_STA_Immediate(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x85, 0x01, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0x05
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x05), cpu.memory.Read(0x01))
+}
+
+func Test_STX_Immediate(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x86, 0x01, 0x00})
+	cpu.Reset()
+	cpu.registerX = 0x05
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x05), cpu.memory.Read(0x01))
+}
+
+func Test_STY_Immediate(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x84, 0x01, 0x00})
+	cpu.Reset()
+	cpu.registerY = 0x05
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x05), cpu.memory.Read(0x01))
 }
 
 func Test_5OpsWorkingTogether(t *testing.T) {
