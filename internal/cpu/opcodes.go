@@ -135,6 +135,30 @@ func (cpu *CPU) TYA(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) CLC(mode addressingMode) error {
+	cpu.status.setC(false)
+
+	return nil
+}
+
+func (cpu *CPU) CLD(mode addressingMode) error {
+	cpu.status.setD(false)
+
+	return nil
+}
+
+func (cpu *CPU) CLI(mode addressingMode) error {
+	cpu.status.setI(false)
+
+	return nil
+}
+
+func (cpu *CPU) CLV(mode addressingMode) error {
+	cpu.status.setO(false)
+
+	return nil
+}
+
 func (cpu *CPU) DEC(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 

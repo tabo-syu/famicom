@@ -97,7 +97,15 @@ func (s *status) o() bool {
 }
 
 // Set Overflow flag
-func (s *status) setO() {}
+func (s *status) setO(o bool) {
+	if o {
+		// Set Decimal flag
+		*s = *s | 0b0100_0000
+	} else {
+		// Unset Decimal flag
+		*s = *s & 0b1011_1111
+	}
+}
 
 // Get Negative flag
 func (s *status) n() bool {

@@ -314,6 +314,50 @@ func Test_TYA_MoveYtoA(t *testing.T) {
 	assert.Equal(t, cpu.registerA, uint8(0x10))
 }
 
+func Test_CLC_UnsetCarryFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x18, 0x00})
+	cpu.Reset()
+	cpu.status.setC(true)
+	assert.True(t, cpu.status.c())
+	cpu.Run()
+
+	assert.False(t, cpu.status.c())
+}
+
+func Test_CLD_UnsetDecimalFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xD8, 0x00})
+	cpu.Reset()
+	cpu.status.setD(true)
+	assert.True(t, cpu.status.d())
+	cpu.Run()
+
+	assert.False(t, cpu.status.d())
+}
+
+func Test_CLI_UnsetInterruptDisableFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x58, 0x00})
+	cpu.Reset()
+	cpu.status.setI(true)
+	assert.True(t, cpu.status.i())
+	cpu.Run()
+
+	assert.False(t, cpu.status.i())
+}
+
+func Test_CLV_UnsetOverflowFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xB8, 0x00})
+	cpu.Reset()
+	cpu.status.setO(true)
+	assert.True(t, cpu.status.o())
+	cpu.Run()
+
+	assert.False(t, cpu.status.o())
+}
+
 func Test_DEC_SetZeroFlag(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0xC6, 0x02, 0x00})

@@ -42,14 +42,14 @@ func (i instruction) Call(cpu *CPU) error {
 	// 	err = cpu.BVC(i.mode)
 	// case "BVS":
 	// 	err = cpu.BVS(i.mode)
-	// case "CLC":
-	// 	err = cpu.CLC(i.mode)
-	// case "CLD":
-	// 	err = cpu.CLD(i.mode)
-	// case "CLI":
-	// 	err = cpu.CLI(i.mode)
-	// case "CLV":
-	// 	err = cpu.CLV(i.mode)
+	case "CLC":
+		err = cpu.CLC(i.mode)
+	case "CLD":
+		err = cpu.CLD(i.mode)
+	case "CLI":
+		err = cpu.CLI(i.mode)
+	case "CLV":
+		err = cpu.CLV(i.mode)
 	// case "CMP":
 	// 	err = cpu.CMP(i.mode)
 	// case "CPX":
