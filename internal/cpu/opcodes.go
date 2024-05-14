@@ -117,6 +117,32 @@ func (cpu *CPU) TYA(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) DEC(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+
+	value := cpu.memory.Read(address)
+	value--
+	cpu.memory.Write(address, value)
+
+	cpu.updateZeroAndNegativeFlags(value)
+
+	return nil
+}
+
+func (cpu *CPU) DEX(mode addressingMode) error {
+	cpu.registerX--
+	cpu.updateZeroAndNegativeFlags(cpu.registerX)
+
+	return nil
+}
+
+func (cpu *CPU) DEY(mode addressingMode) error {
+	cpu.registerY--
+	cpu.updateZeroAndNegativeFlags(cpu.registerY)
+
+	return nil
+}
+
 func (cpu *CPU) INC(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 

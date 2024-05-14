@@ -314,6 +314,88 @@ func Test_TYA_MoveYtoA(t *testing.T) {
 	assert.Equal(t, cpu.registerA, uint8(0x10))
 }
 
+func Test_DEC_SetZeroFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xC6, 0x02, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x02, 0x01)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x00), cpu.memory.Read(0x01))
+	assert.True(t, cpu.status.z())
+}
+
+func Test_DEC_SetNegativeFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xC6, 0x01, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x01, 0b0100_0001)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x40), cpu.memory.Read(0x01))
+	assert.True(t, cpu.status.n())
+}
+
+func Test_DEC_Decrement(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xC6, 0x02, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x02, 0x03)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x02), cpu.memory.Read(0x02))
+}
+
+func Test_DEC_Underflow(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xC6, 0x01, 0xC6, 0x01, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x01, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0xFE), cpu.memory.Read(0x01))
+}
+
+func Test_DEX_Decrement(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xCA, 0xCA, 0x00})
+	cpu.Reset()
+	cpu.registerX = 0x03
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+}
+
+func Test_DEX_UnderflowX(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xCA, 0xCA, 0x00})
+	cpu.Reset()
+	cpu.registerX = 0x00
+	cpu.Run()
+
+	assert.Equal(t, uint8(0xFE), cpu.registerX)
+}
+
+func Test_DEY_Decrement(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x88, 0x88, 0x00})
+	cpu.Reset()
+	cpu.registerY = 0x03
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.registerY)
+}
+
+func Test_DEY_UnderflowY(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x88, 0x88, 0x00})
+	cpu.Reset()
+	cpu.registerY = 0x00
+	cpu.Run()
+
+	assert.Equal(t, uint8(0xFE), cpu.registerY)
+}
+
 func Test_INC_SetZeroFlag(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0xE6, 0x01, 0x00})

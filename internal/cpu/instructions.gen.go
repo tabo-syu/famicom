@@ -56,12 +56,12 @@ func (i instruction) Call(cpu *CPU) error {
 	// 	err = cpu.CPX(i.mode)
 	// case "CPY":
 	// 	err = cpu.CPY(i.mode)
-	// case "DEC":
-	// 	err = cpu.DEC(i.mode)
-	// case "DEX":
-	// 	err = cpu.DEX(i.mode)
-	// case "DEY":
-	// 	err = cpu.DEY(i.mode)
+	case "DEC":
+		err = cpu.DEC(i.mode)
+	case "DEX":
+		err = cpu.DEX(i.mode)
+	case "DEY":
+		err = cpu.DEY(i.mode)
 	// case "EOR":
 	// 	err = cpu.EOR(i.mode)
 	case "INC":
