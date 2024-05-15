@@ -20,8 +20,8 @@ func (i instruction) Call(cpu *CPU) error {
 		err = cpu.BRK(i.mode)
 	// case "ADC":
 	// 	err = cpu.ADC(i.mode)
-	// case "AND":
-	// 	err = cpu.AND(i.mode)
+	case "AND":
+		err = cpu.AND(i.mode)
 	// case "ASL":
 	// 	err = cpu.ASL(i.mode)
 	// case "BCC":
@@ -62,8 +62,8 @@ func (i instruction) Call(cpu *CPU) error {
 		err = cpu.DEX(i.mode)
 	case "DEY":
 		err = cpu.DEY(i.mode)
-	// case "EOR":
-	// 	err = cpu.EOR(i.mode)
+	case "EOR":
+		err = cpu.EOR(i.mode)
 	case "INC":
 		err = cpu.INC(i.mode)
 	case "INX":
@@ -84,8 +84,8 @@ func (i instruction) Call(cpu *CPU) error {
 	// 	err = cpu.LSR(i.mode)
 	// case "NOP":
 	// 	err = cpu.NOP(i.mode)
-	// case "ORA":
-	// 	err = cpu.ORA(i.mode)
+	case "ORA":
+		err = cpu.ORA(i.mode)
 	// case "PHA":
 	// 	err = cpu.PHA(i.mode)
 	// case "PHP":

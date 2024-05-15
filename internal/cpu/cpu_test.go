@@ -11,6 +11,38 @@ import (
 // - RelativeMode
 // - IndirectMode
 
+func Test_AND_Accumulator(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x29, 0b1001_0110, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b0000_1111
+	cpu.Run()
+
+	assert.Equal(t, uint8(0b0000_0110), cpu.registerA)
+}
+
+func Test_AND_SetZeroFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x29, 0b0000_0000, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b0000_0000
+	cpu.Run()
+
+	assert.True(t, cpu.status.z())
+	assert.False(t, cpu.status.n())
+}
+
+func Test_AND_SetNegativeFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x29, 0b0100_0000, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b0100_0000
+	cpu.Run()
+
+	assert.False(t, cpu.status.z())
+	assert.True(t, cpu.status.n())
+}
+
 func Test_LDA_SetZeroFlag(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0xA9, 0x00, 0x00})
@@ -254,6 +286,38 @@ func Test_LDY_AbsoluteX(t *testing.T) {
 	assert.Equal(t, uint8(0x13), cpu.registerY)
 }
 
+func Test_ORA_Accumulator(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x09, 0b1001_0110, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b0000_1111
+	cpu.Run()
+
+	assert.Equal(t, uint8(0b1001_1111), cpu.registerA)
+}
+
+func Test_ORA_SetZeroFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x09, 0b0000_0000, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b0000_0000
+	cpu.Run()
+
+	assert.True(t, cpu.status.z())
+	assert.False(t, cpu.status.n())
+}
+
+func Test_ORA_SetNegativeFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x09, 0b0100_0000, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b0000_0000
+	cpu.Run()
+
+	assert.False(t, cpu.status.z())
+	assert.True(t, cpu.status.n())
+}
+
 func Test_TAX_MoveAtoX(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0xAA, 0x00})
@@ -379,6 +443,7 @@ func Test_CMP_SetCarryOnly(t *testing.T) {
 	assert.True(t, cpu.status.c())
 	assert.False(t, cpu.status.z())
 }
+
 func Test_CPX_SetZeroAndCarry(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0xE0, 0x10, 0x00})
@@ -493,6 +558,38 @@ func Test_DEY_Decrement(t *testing.T) {
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x01), cpu.registerY)
+}
+
+func Test_EOR_Accumulator(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x49, 0b1001_0110, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b0000_1111
+	cpu.Run()
+
+	assert.Equal(t, uint8(0b1001_1001), cpu.registerA)
+}
+
+func Test_EOR_SetZeroFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x49, 0b0000_0000, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b0000_0000
+	cpu.Run()
+
+	assert.True(t, cpu.status.z())
+	assert.False(t, cpu.status.n())
+}
+
+func Test_EOR_SetNegativeFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x49, 0b0000_0000, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b0100_0000
+	cpu.Run()
+
+	assert.False(t, cpu.status.z())
+	assert.True(t, cpu.status.n())
 }
 
 func Test_DEY_UnderflowY(t *testing.T) {

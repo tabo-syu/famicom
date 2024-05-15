@@ -1,6 +1,8 @@
 package cpu
 
-import "errors"
+import (
+	"errors"
+)
 
 type addressingMode int
 
@@ -23,6 +25,17 @@ const (
 
 func (cpu *CPU) BRK(mode addressingMode) error {
 	return errors.New("BRK called")
+}
+
+func (cpu *CPU) AND(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+	value := cpu.memory.Read(address)
+
+	result := cpu.registerA & value
+	cpu.registerA = result
+	cpu.updateZeroAndNegativeFlags(result)
+
+	return nil
 }
 
 func (cpu *CPU) SEC(mode addressingMode) error {
@@ -90,6 +103,17 @@ func (cpu *CPU) LDY(mode addressingMode) error {
 
 	cpu.registerY = value
 	cpu.updateZeroAndNegativeFlags(cpu.registerY)
+
+	return nil
+}
+
+func (cpu *CPU) ORA(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+	value := cpu.memory.Read(address)
+
+	result := cpu.registerA | value
+	cpu.registerA = result
+	cpu.updateZeroAndNegativeFlags(result)
 
 	return nil
 }
@@ -242,6 +266,17 @@ func (cpu *CPU) DEY(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) EOR(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+	value := cpu.memory.Read(address)
+
+	result := cpu.registerA ^ value
+	cpu.registerA = result
+	cpu.updateZeroAndNegativeFlags(result)
+
+	return nil
+}
+
 func (cpu *CPU) INC(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 
@@ -329,16 +364,23 @@ func (cpu *CPU) getOperandAddress(mode addressingMode) uint16 {
 	}
 }
 
-func (cpu *CPU) updateZeroAndNegativeFlags(value uint8) {
+func (cpu *CPU) updateZeroFlag(value uint8) {
 	if value == 0 {
 		cpu.status.setZ(true)
 	} else {
 		cpu.status.setZ(false)
 	}
+}
 
+func (cpu *CPU) updateNegativeFlag(value uint8) {
 	if value&0b0100_0000 != 0 {
 		cpu.status.setN(true)
 	} else {
 		cpu.status.setN(false)
 	}
+}
+
+func (cpu *CPU) updateZeroAndNegativeFlags(value uint8) {
+	cpu.updateZeroFlag(value)
+	cpu.updateNegativeFlag(value)
 }
