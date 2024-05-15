@@ -16,8 +16,6 @@ func (i instruction) Call(cpu *CPU) error {
 	var err error
 
 	switch i.opcode {
-	case "BRK":
-		err = cpu.BRK(i.mode)
 	// case "ADC":
 	// 	err = cpu.ADC(i.mode)
 	case "AND":
@@ -38,6 +36,8 @@ func (i instruction) Call(cpu *CPU) error {
 	// 	err = cpu.BNE(i.mode)
 	// case "BPL":
 	// 	err = cpu.BPL(i.mode)
+	case "BRK":
+		err = cpu.BRK(i.mode)
 	// case "BVC":
 	// 	err = cpu.BVC(i.mode)
 	// case "BVS":
