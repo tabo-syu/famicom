@@ -159,6 +159,63 @@ func (cpu *CPU) CLV(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) CMP(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+
+	value := cpu.memory.Read(address)
+	if cpu.registerA == value {
+		cpu.status.setZ(true)
+	}
+	if cpu.registerA >= value {
+		cpu.status.setC(true)
+	}
+	if value&0b0100_0000 != 0 {
+		cpu.status.setN(true)
+	} else {
+		cpu.status.setN(false)
+	}
+
+	return nil
+}
+
+func (cpu *CPU) CPX(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+
+	value := cpu.memory.Read(address)
+	if cpu.registerX == value {
+		cpu.status.setZ(true)
+	}
+	if cpu.registerX >= value {
+		cpu.status.setC(true)
+	}
+	if value&0b0100_0000 != 0 {
+		cpu.status.setN(true)
+	} else {
+		cpu.status.setN(false)
+	}
+
+	return nil
+}
+
+func (cpu *CPU) CPY(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+
+	value := cpu.memory.Read(address)
+	if cpu.registerY == value {
+		cpu.status.setZ(true)
+	}
+	if cpu.registerY >= value {
+		cpu.status.setC(true)
+	}
+	if value&0b0100_0000 != 0 {
+		cpu.status.setN(true)
+	} else {
+		cpu.status.setN(false)
+	}
+
+	return nil
+}
+
 func (cpu *CPU) DEC(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 

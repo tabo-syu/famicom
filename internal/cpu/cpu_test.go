@@ -358,6 +358,71 @@ func Test_CLV_UnsetOverflowFlag(t *testing.T) {
 	assert.False(t, cpu.status.o())
 }
 
+func Test_CMP_SetZeroAndCarry(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xC9, 0x10, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0x10
+	cpu.Run()
+
+	assert.True(t, cpu.status.c())
+	assert.True(t, cpu.status.z())
+}
+
+func Test_CMP_SetCarryOnly(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xC9, 0x09, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0x10
+	cpu.Run()
+
+	assert.True(t, cpu.status.c())
+	assert.False(t, cpu.status.z())
+}
+func Test_CPX_SetZeroAndCarry(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xE0, 0x10, 0x00})
+	cpu.Reset()
+	cpu.registerX = 0x10
+	cpu.Run()
+
+	assert.True(t, cpu.status.c())
+	assert.True(t, cpu.status.z())
+}
+
+func Test_CPX_SetCarryOnly(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xE0, 0x09, 0x00})
+	cpu.Reset()
+	cpu.registerX = 0x10
+	cpu.Run()
+
+	assert.True(t, cpu.status.c())
+	assert.False(t, cpu.status.z())
+}
+
+func Test_CPY_SetZeroAndCarry(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xC0, 0x10, 0x00})
+	cpu.Reset()
+	cpu.registerY = 0x10
+	cpu.Run()
+
+	assert.True(t, cpu.status.c())
+	assert.True(t, cpu.status.z())
+}
+
+func Test_CPY_SetCarryOnly(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xC0, 0x09, 0x00})
+	cpu.Reset()
+	cpu.registerY = 0x10
+	cpu.Run()
+
+	assert.True(t, cpu.status.c())
+	assert.False(t, cpu.status.z())
+}
+
 func Test_DEC_SetZeroFlag(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0xC6, 0x02, 0x00})

@@ -50,12 +50,12 @@ func (i instruction) Call(cpu *CPU) error {
 		err = cpu.CLI(i.mode)
 	case "CLV":
 		err = cpu.CLV(i.mode)
-	// case "CMP":
-	// 	err = cpu.CMP(i.mode)
-	// case "CPX":
-	// 	err = cpu.CPX(i.mode)
-	// case "CPY":
-	// 	err = cpu.CPY(i.mode)
+	case "CMP":
+		err = cpu.CMP(i.mode)
+	case "CPX":
+		err = cpu.CPX(i.mode)
+	case "CPY":
+		err = cpu.CPY(i.mode)
 	case "DEC":
 		err = cpu.DEC(i.mode)
 	case "DEX":
