@@ -65,8 +65,26 @@ func (cpu *CPU) BEQ(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) BMI(mode addressingMode) error {
+	if cpu.status.n() {
+		address := cpu.getOperandAddress(mode)
+		cpu.programCounter = address
+	}
+
+	return nil
+}
+
 func (cpu *CPU) BNE(mode addressingMode) error {
 	if !cpu.status.z() {
+		address := cpu.getOperandAddress(mode)
+		cpu.programCounter = address
+	}
+
+	return nil
+}
+
+func (cpu *CPU) BPL(mode addressingMode) error {
+	if !cpu.status.n() {
 		address := cpu.getOperandAddress(mode)
 		cpu.programCounter = address
 	}

@@ -161,6 +161,44 @@ func Test_BEQ_WhenMinusOperand(t *testing.T) {
 	assert.Equal(t, uint16(0x7F_FA), cpu.programCounter)
 }
 
+func Test_BMI_WhenSetNegative(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x30, 0x10, 0x00})
+	cpu.Reset()
+	cpu.status.setN(true)
+	cpu.memory.Write(0x80_12, 0xE8)
+	cpu.memory.Write(0x80_13, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+	assert.Equal(t, uint16(0x80_14), cpu.programCounter)
+}
+
+func Test_BMI_WhenUnsetNegative(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x30, 0x10, 0x00})
+	cpu.Reset()
+	cpu.status.setN(false)
+	cpu.memory.Write(0x80_10, 0xE8)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x00), cpu.registerX)
+	assert.Equal(t, uint16(0x80_03), cpu.programCounter)
+}
+
+func Test_BMI_WhenMinusOperand(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x30, 0xF6, 0x00})
+	cpu.Reset()
+	cpu.status.setN(true)
+	cpu.memory.Write(0x7F_F8, 0xE8)
+	cpu.memory.Write(0x7F_F9, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+	assert.Equal(t, uint16(0x7F_FA), cpu.programCounter)
+}
+
 func Test_BNE_WhenSetZero(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0xD0, 0x10, 0x00})
@@ -191,6 +229,44 @@ func Test_BNE_WhenMinusOperand(t *testing.T) {
 	cpu.Load([]uint8{0xD0, 0xF6, 0x00})
 	cpu.Reset()
 	cpu.status.setZ(false)
+	cpu.memory.Write(0x7F_F8, 0xE8)
+	cpu.memory.Write(0x7F_F9, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+	assert.Equal(t, uint16(0x7F_FA), cpu.programCounter)
+}
+
+func Test_BPL_WhenSetNegative(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x10, 0x10, 0x00})
+	cpu.Reset()
+	cpu.status.setN(true)
+	cpu.memory.Write(0x80_10, 0xE8)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x00), cpu.registerX)
+	assert.Equal(t, uint16(0x80_03), cpu.programCounter)
+}
+
+func Test_BPL_WhenUnsetNegative(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x10, 0x10, 0x00})
+	cpu.Reset()
+	cpu.status.setN(false)
+	cpu.memory.Write(0x80_12, 0xE8)
+	cpu.memory.Write(0x80_13, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+	assert.Equal(t, uint16(0x80_14), cpu.programCounter)
+}
+
+func Test_BPL_WhenMinusOperand(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x10, 0xF6, 0x00})
+	cpu.Reset()
+	cpu.status.setN(false)
 	cpu.memory.Write(0x7F_F8, 0xE8)
 	cpu.memory.Write(0x7F_F9, 0x00)
 	cpu.Run()
