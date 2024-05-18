@@ -28,8 +28,8 @@ func (i instruction) Call(cpu *CPU) error {
 		err = cpu.BCS(i.mode)
 	case "BEQ":
 		err = cpu.BEQ(i.mode)
-	// case "BIT":
-	// 	err = cpu.BIT(i.mode)
+	case "BIT":
+		err = cpu.BIT(i.mode)
 	case "BMI":
 		err = cpu.BMI(i.mode)
 	case "BNE":

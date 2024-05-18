@@ -184,6 +184,58 @@ func Test_BEQ_WhenMinusOperand(t *testing.T) {
 	assert.Equal(t, uint16(0x7F_FA), cpu.programCounter)
 }
 
+func Test_BIT_SetNegativeFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x24, 0x05, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b1010_1010
+	cpu.memory.Write(0x05, 0b1111_0000)
+	cpu.Run()
+
+	assert.False(t, cpu.status.z())
+	assert.True(t, cpu.status.n())
+	assert.False(t, cpu.status.o())
+}
+
+func Test_BIT_SetOverflowFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x24, 0x05, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b1100_1111
+	cpu.memory.Write(0x05, 0b1111_0000)
+	cpu.Run()
+
+	assert.False(t, cpu.status.z())
+	assert.True(t, cpu.status.n())
+	assert.True(t, cpu.status.o())
+}
+
+func Test_BIT_SetZeroFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x24, 0x05, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b0000_0000
+	cpu.memory.Write(0x05, 0b1111_0000)
+	cpu.Run()
+
+	assert.True(t, cpu.status.z())
+	assert.False(t, cpu.status.n())
+	assert.False(t, cpu.status.o())
+}
+
+func Test_BIT_Absolute(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x2C, 0x05, 0x33, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b1100_1111
+	cpu.memory.Write(0x33_05, 0b1111_0000)
+	cpu.Run()
+
+	assert.False(t, cpu.status.z())
+	assert.True(t, cpu.status.n())
+	assert.True(t, cpu.status.o())
+}
+
 func Test_BMI_WhenSetNegative(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0x30, 0x10, 0x00})

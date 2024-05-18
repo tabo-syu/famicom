@@ -86,6 +86,23 @@ func (cpu *CPU) BEQ(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) BIT(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+	value := cpu.memory.Read(address)
+
+	result := cpu.registerA & value
+
+	isOverflow := (result & uint8(0b0100_0000) >> 6) == 1
+	cpu.status.setO(isOverflow)
+
+	isNegative := (result & uint8(0b1000_0000) >> 7) == 1
+	cpu.status.setN(isNegative)
+
+	cpu.updateZeroFlag(result)
+
+	return nil
+}
+
 func (cpu *CPU) BMI(mode addressingMode) error {
 	if cpu.status.n() {
 		address := cpu.getOperandAddress(mode)
