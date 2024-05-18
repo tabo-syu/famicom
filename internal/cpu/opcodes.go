@@ -348,6 +348,13 @@ func (cpu *CPU) ROR(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) RTI(mode addressingMode) error {
+	cpu.status = status(cpu.popStack())
+	cpu.programCounter = cpu.popStackUint16() + 1
+
+	return nil
+}
+
 func (cpu *CPU) TAX(mode addressingMode) error {
 	cpu.registerX = cpu.registerA
 	cpu.updateZeroAndNegativeFlags(cpu.registerX)

@@ -883,6 +883,26 @@ func Test_ROR_RotateFromMemory(t *testing.T) {
 	assert.Equal(t, uint8(0b1100_1010), cpu.memory.Read(0x32))
 }
 
+func Test_RTI_ReturnFromInterrupt(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x40, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x01_FF, 0x05)
+	cpu.memory.Write(0x01_FE, 0x06)
+	cpu.memory.Write(0x01_FD, 0b1001_0110)
+	// SEC
+	cpu.memory.Write(0x05_07, 0x38)
+	cpu.memory.Write(0x05_08, 0x00)
+	cpu.stackPointer = stackPointer(0xFC)
+	cpu.Run()
+
+	// SEC affected
+	assert.Equal(t, uint8(0b1001_0111), uint8(cpu.status))
+	// assert.Equal(t, uint8(0x01), cpu.registerX)
+	assert.Equal(t, uint16(0x05_09), cpu.programCounter)
+	assert.Equal(t, uint8(0xFF), uint8(cpu.stackPointer))
+}
+
 func Test_RTS_PopStack(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0x60, 0x00})

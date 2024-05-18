@@ -98,8 +98,8 @@ func (i instruction) Call(cpu *CPU) error {
 		err = cpu.ROL(i.mode)
 	case "ROR":
 		err = cpu.ROR(i.mode)
-	// case "RTI":
-	// 	err = cpu.RTI(i.mode)
+	case "RTI":
+		err = cpu.RTI(i.mode)
 	case "RTS":
 		err = cpu.RTS(i.mode)
 	// case "SBC":
