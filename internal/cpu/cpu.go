@@ -11,7 +11,7 @@ type CPU struct {
 	registerA      uint8
 	registerX      uint8
 	registerY      uint8
-	stackPointer   uint8
+	stackPointer   stackPointer
 	status         status
 
 	memory       memory.Memory
@@ -25,7 +25,7 @@ func NewCPU() CPU {
 		registerX:      0,
 		registerY:      0,
 		stackPointer:   0,
-		status:         newStatus(),
+		status:         0,
 
 		memory:       memory.NewMemory(),
 		instructions: NewInstructions(),
@@ -43,7 +43,7 @@ func (cpu *CPU) Reset() {
 	cpu.registerA = 0
 	cpu.registerX = 0
 	cpu.registerY = 0
-	cpu.stackPointer = 0xFF
+	cpu.stackPointer = newStackPointer()
 	cpu.status = newStatus()
 }
 

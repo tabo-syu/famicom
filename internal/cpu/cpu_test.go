@@ -626,6 +626,43 @@ func Test_ORA_SetNegativeFlag(t *testing.T) {
 	assert.True(t, cpu.status.n())
 }
 
+func Test_PHA_PushAccumulator(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x48, 0x00})
+	cpu.Reset()
+	cpu.stackPointer = stackPointer(0x05)
+	cpu.registerA = 0x22
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x04), uint8(cpu.stackPointer))
+	assert.Equal(t, uint8(0x22), cpu.memory.Read(0x01_05))
+}
+
+func Test_PLA_PopAccumulator(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x68, 0x00})
+	cpu.Reset()
+	cpu.stackPointer = stackPointer(0x05)
+	cpu.memory.Write(0x01_05, 0x22)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x06), uint8(cpu.stackPointer))
+	assert.Equal(t, uint8(0x22), cpu.registerA)
+}
+
+func Test_PLA_SetNegativeFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x68, 0x00})
+	cpu.Reset()
+	cpu.stackPointer = stackPointer(0x05)
+	cpu.memory.Write(0x01_05, 0b0100_0000)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x06), uint8(cpu.stackPointer))
+	assert.Equal(t, uint8(0b0100_0000), cpu.registerA)
+	assert.True(t, cpu.status.n())
+}
+
 func Test_TAX_MoveAtoX(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0xAA, 0x00})
@@ -673,7 +710,7 @@ func Test_TXS_MoveXtoS(t *testing.T) {
 	cpu.registerX = 0x10
 	cpu.Run()
 
-	assert.Equal(t, cpu.stackPointer, uint8(0x10))
+	assert.Equal(t, cpu.stackPointer, stackPointer(0x10))
 }
 
 func Test_TYA_MoveYtoA(t *testing.T) {

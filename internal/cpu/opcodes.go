@@ -188,6 +188,19 @@ func (cpu *CPU) ORA(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) PHA(mode addressingMode) error {
+	cpu.pushStack(cpu.registerA)
+
+	return nil
+}
+
+func (cpu *CPU) PLA(mode addressingMode) error {
+	cpu.registerA = cpu.popStack()
+	cpu.updateZeroAndNegativeFlags(cpu.registerA)
+
+	return nil
+}
+
 func (cpu *CPU) TAX(mode addressingMode) error {
 	cpu.registerX = cpu.registerA
 	cpu.updateZeroAndNegativeFlags(cpu.registerX)
@@ -203,7 +216,7 @@ func (cpu *CPU) TAY(mode addressingMode) error {
 }
 
 func (cpu *CPU) TSX(mode addressingMode) error {
-	cpu.registerX = cpu.stackPointer
+	cpu.registerX = uint8(cpu.stackPointer)
 	cpu.updateZeroAndNegativeFlags(cpu.registerX)
 
 	return nil
@@ -217,7 +230,7 @@ func (cpu *CPU) TXA(mode addressingMode) error {
 }
 
 func (cpu *CPU) TXS(mode addressingMode) error {
-	cpu.stackPointer = cpu.registerX
+	cpu.stackPointer = stackPointer(cpu.registerX)
 
 	return nil
 }
@@ -452,6 +465,18 @@ func (cpu *CPU) getOperandAddress(mode addressingMode) uint16 {
 	default:
 		return 0
 	}
+}
+
+func (cpu *CPU) pushStack(value uint8) {
+	cpu.memory.Write(cpu.stackPointer.toAddress(), value)
+	cpu.stackPointer--
+}
+
+func (cpu *CPU) popStack() uint8 {
+	value := cpu.memory.Read(cpu.stackPointer.toAddress())
+	cpu.stackPointer++
+
+	return value
 }
 
 func (cpu *CPU) updateZeroFlag(value uint8) {
