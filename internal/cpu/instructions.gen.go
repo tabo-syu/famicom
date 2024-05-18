@@ -38,10 +38,10 @@ func (i instruction) Call(cpu *CPU) error {
 		err = cpu.BPL(i.mode)
 	case "BRK":
 		err = cpu.BRK(i.mode)
-	// case "BVC":
-	// 	err = cpu.BVC(i.mode)
-	// case "BVS":
-	// 	err = cpu.BVS(i.mode)
+	case "BVC":
+		err = cpu.BVC(i.mode)
+	case "BVS":
+		err = cpu.BVS(i.mode)
 	case "CLC":
 		err = cpu.CLC(i.mode)
 	case "CLD":

@@ -1,8 +1,6 @@
 package cpu
 
-import (
-	"errors"
-)
+import "errors"
 
 type addressingMode int
 
@@ -22,10 +20,6 @@ const (
 	IndirectYMode
 	NoneAddressingMode
 )
-
-func (cpu *CPU) BRK(mode addressingMode) error {
-	return errors.New("BRK called")
-}
 
 func (cpu *CPU) AND(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
@@ -85,6 +79,28 @@ func (cpu *CPU) BNE(mode addressingMode) error {
 
 func (cpu *CPU) BPL(mode addressingMode) error {
 	if !cpu.status.n() {
+		address := cpu.getOperandAddress(mode)
+		cpu.programCounter = address
+	}
+
+	return nil
+}
+
+func (cpu *CPU) BRK(mode addressingMode) error {
+	return errors.New("BRK called")
+}
+
+func (cpu *CPU) BVC(mode addressingMode) error {
+	if !cpu.status.o() {
+		address := cpu.getOperandAddress(mode)
+		cpu.programCounter = address
+	}
+
+	return nil
+}
+
+func (cpu *CPU) BVS(mode addressingMode) error {
+	if cpu.status.o() {
 		address := cpu.getOperandAddress(mode)
 		cpu.programCounter = address
 	}
