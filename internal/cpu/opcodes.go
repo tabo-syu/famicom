@@ -292,7 +292,7 @@ func (cpu *CPU) CMP(mode addressingMode) error {
 	if cpu.registerA >= value {
 		cpu.status.setC(true)
 	}
-	if value&0b0100_0000 != 0 {
+	if value&0b1000_0000 != 0 {
 		cpu.status.setN(true)
 	} else {
 		cpu.status.setN(false)
@@ -311,7 +311,7 @@ func (cpu *CPU) CPX(mode addressingMode) error {
 	if cpu.registerX >= value {
 		cpu.status.setC(true)
 	}
-	if value&0b0100_0000 != 0 {
+	if value&0b1000_0000 != 0 {
 		cpu.status.setN(true)
 	} else {
 		cpu.status.setN(false)
@@ -330,7 +330,7 @@ func (cpu *CPU) CPY(mode addressingMode) error {
 	if cpu.registerY >= value {
 		cpu.status.setC(true)
 	}
-	if value&0b0100_0000 != 0 {
+	if value&0b1000_0000 != 0 {
 		cpu.status.setN(true)
 	} else {
 		cpu.status.setN(false)
@@ -534,7 +534,7 @@ func (cpu *CPU) updateZeroFlag(value uint8) {
 }
 
 func (cpu *CPU) updateNegativeFlag(value uint8) {
-	if value&0b0100_0000 != 0 {
+	if value&0b1000_0000 != 0 {
 		cpu.status.setN(true)
 	} else {
 		cpu.status.setN(false)

@@ -32,9 +32,9 @@ func Test_AND_SetZeroFlag(t *testing.T) {
 
 func Test_AND_SetNegativeFlag(t *testing.T) {
 	cpu := NewCPU()
-	cpu.Load([]uint8{0x29, 0b0100_0000, 0x00})
+	cpu.Load([]uint8{0x29, 0b1000_0000, 0x00})
 	cpu.Reset()
-	cpu.registerA = 0b0100_0000
+	cpu.registerA = 0b1000_0000
 	cpu.Run()
 
 	assert.False(t, cpu.status.z())
@@ -362,7 +362,7 @@ func Test_LDA_SetZeroFlag(t *testing.T) {
 
 func Test_LDA_SetNegativeFlag(t *testing.T) {
 	cpu := NewCPU()
-	cpu.Load([]uint8{0xA9, 0b0100_0000, 0x00})
+	cpu.Load([]uint8{0xA9, 0b1000_0000, 0x00})
 	cpu.Reset()
 	cpu.Run()
 
@@ -468,7 +468,7 @@ func Test_LDX_SetZeroFlag(t *testing.T) {
 
 func Test_LDX_SetNegativeFlag(t *testing.T) {
 	cpu := NewCPU()
-	cpu.Load([]uint8{0xA2, 0b0100_0000, 0x00})
+	cpu.Load([]uint8{0xA2, 0b1000_0000, 0x00})
 	cpu.Reset()
 	cpu.Run()
 
@@ -537,7 +537,7 @@ func Test_LDY_SetZeroFlag(t *testing.T) {
 
 func Test_LDY_SetNegativeFlag(t *testing.T) {
 	cpu := NewCPU()
-	cpu.Load([]uint8{0xA0, 0b0100_0000, 0x00})
+	cpu.Load([]uint8{0xA0, 0b1000_0000, 0x00})
 	cpu.Reset()
 	cpu.Run()
 
@@ -627,9 +627,9 @@ func Test_ORA_SetZeroFlag(t *testing.T) {
 
 func Test_ORA_SetNegativeFlag(t *testing.T) {
 	cpu := NewCPU()
-	cpu.Load([]uint8{0x09, 0b0100_0000, 0x00})
+	cpu.Load([]uint8{0x09, 0b1000_0000, 0x00})
 	cpu.Reset()
-	cpu.registerA = 0b0000_0000
+	cpu.registerA = 0b1000_0000
 	cpu.Run()
 
 	assert.False(t, cpu.status.z())
@@ -677,11 +677,11 @@ func Test_PLA_SetNegativeFlag(t *testing.T) {
 	cpu.Load([]uint8{0x68, 0x00})
 	cpu.Reset()
 	cpu.stackPointer = stackPointer(0x05)
-	cpu.memory.Write(0x01_06, 0b0100_0000)
+	cpu.memory.Write(0x01_06, 0b1000_0000)
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x06), uint8(cpu.stackPointer))
-	assert.Equal(t, uint8(0b0100_0000), cpu.registerA)
+	assert.Equal(t, uint8(0b1000_0000), cpu.registerA)
 	assert.True(t, cpu.status.n())
 }
 
@@ -912,10 +912,10 @@ func Test_DEC_SetNegativeFlag(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0xC6, 0x01, 0x00})
 	cpu.Reset()
-	cpu.memory.Write(0x01, 0b0100_0001)
+	cpu.memory.Write(0x01, 0b1000_0001)
 	cpu.Run()
 
-	assert.Equal(t, uint8(0x40), cpu.memory.Read(0x01))
+	assert.Equal(t, uint8(0b1000_0000), cpu.memory.Read(0x01))
 	assert.True(t, cpu.status.n())
 }
 
@@ -994,7 +994,7 @@ func Test_EOR_SetNegativeFlag(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0x49, 0b0000_0000, 0x00})
 	cpu.Reset()
-	cpu.registerA = 0b0100_0000
+	cpu.registerA = 0b1000_0000
 	cpu.Run()
 
 	assert.False(t, cpu.status.z())
@@ -1026,10 +1026,10 @@ func Test_INC_SetNegativeFlag(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0xE6, 0x01, 0x00})
 	cpu.Reset()
-	cpu.memory.Write(0x01, 0b0011_1111)
+	cpu.memory.Write(0x01, 0b0111_1111)
 	cpu.Run()
 
-	assert.Equal(t, uint8(0x40), cpu.memory.Read(0x01))
+	assert.Equal(t, uint8(0x80), cpu.memory.Read(0x01))
 	assert.True(t, cpu.status.n())
 }
 
