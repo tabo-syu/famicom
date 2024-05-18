@@ -38,6 +38,24 @@ func (cpu *CPU) AND(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) BCC(mode addressingMode) error {
+	if !cpu.status.c() {
+		address := cpu.getOperandAddress(mode)
+		cpu.programCounter = address
+	}
+
+	return nil
+}
+
+func (cpu *CPU) BCS(mode addressingMode) error {
+	if cpu.status.c() {
+		address := cpu.getOperandAddress(mode)
+		cpu.programCounter = address
+	}
+
+	return nil
+}
+
 func (cpu *CPU) SEC(mode addressingMode) error {
 	cpu.status.setC(true)
 
@@ -328,6 +346,12 @@ func (cpu *CPU) getOperandAddress(mode addressingMode) uint16 {
 	case ZeroPageYMode:
 		position := cpu.memory.Read(cpu.programCounter)
 		address := uint16(position + cpu.registerY)
+
+		return address
+
+	case RelativeMode:
+		operand := int8(cpu.memory.Read(cpu.programCounter))
+		address := uint16(int32(cpu.programCounter) + int32(operand))
 
 		return address
 

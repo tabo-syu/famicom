@@ -8,8 +8,6 @@ import (
 
 // TODO: Test Addressing mode
 // - AccumulatorMode
-// - RelativeMode
-// - IndirectMode
 
 func Test_AND_Accumulator(t *testing.T) {
 	cpu := NewCPU()
@@ -41,6 +39,88 @@ func Test_AND_SetNegativeFlag(t *testing.T) {
 
 	assert.False(t, cpu.status.z())
 	assert.True(t, cpu.status.n())
+}
+
+func Test_BCC_WhenSetCarry(t *testing.T) {
+	cpu := NewCPU()
+	// 0x8000, 0x8001, 0x8002, 0x8003
+	cpu.Load([]uint8{0x90, 0x10, 0x00})
+	cpu.Reset()
+	cpu.status.setC(true)
+	cpu.memory.Write(0x80_10, 0xE8)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x00), cpu.registerX)
+	assert.Equal(t, uint16(0x80_03), cpu.programCounter)
+}
+
+func Test_BCC_WhenUnsetCarry(t *testing.T) {
+	cpu := NewCPU()
+	// 0x8000, 0x8001, 0x8012, 0x8013
+	cpu.Load([]uint8{0x90, 0x10, 0x00})
+	cpu.Reset()
+	cpu.status.setC(false)
+	cpu.memory.Write(0x80_12, 0xE8)
+	cpu.memory.Write(0x80_13, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+	assert.Equal(t, uint16(0x80_14), cpu.programCounter)
+}
+
+func Test_BCC_WhenMinusOperand(t *testing.T) {
+	cpu := NewCPU()
+	// 0x8000, 0x8001, 0x8012, 0x8013
+	cpu.Load([]uint8{0x90, 0xF6, 0x00})
+	cpu.Reset()
+	cpu.status.setC(false)
+	cpu.memory.Write(0x7F_F8, 0xE8)
+	cpu.memory.Write(0x7F_F9, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+	assert.Equal(t, uint16(0x7F_FA), cpu.programCounter)
+}
+
+func Test_BCS_WhenSetCarry(t *testing.T) {
+	cpu := NewCPU()
+	// 0x8000, 0x8001, 0x8012, 0x8013
+	cpu.Load([]uint8{0xB0, 0x10, 0x00})
+	cpu.Reset()
+	cpu.status.setC(true)
+	cpu.memory.Write(0x80_12, 0xE8)
+	cpu.memory.Write(0x80_13, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+	assert.Equal(t, uint16(0x80_14), cpu.programCounter)
+}
+
+func Test_BCS_WhenUnsetCarry(t *testing.T) {
+	cpu := NewCPU()
+	// 0x8000, 0x8001, 0x8002, 0x8003
+	cpu.Load([]uint8{0xB0, 0x10, 0x00})
+	cpu.Reset()
+	cpu.status.setC(false)
+	cpu.memory.Write(0x80_10, 0xE8)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x00), cpu.registerX)
+	assert.Equal(t, uint16(0x80_03), cpu.programCounter)
+}
+
+func Test_BCS_WhenMinusOperand(t *testing.T) {
+	cpu := NewCPU()
+	// 0x8000, 0x8001, 0x8012, 0x8013
+	cpu.Load([]uint8{0xB0, 0xF6, 0x00})
+	cpu.Reset()
+	cpu.status.setC(true)
+	cpu.memory.Write(0x7F_F8, 0xE8)
+	cpu.memory.Write(0x7F_F9, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+	assert.Equal(t, uint16(0x7F_FA), cpu.programCounter)
 }
 
 func Test_LDA_SetZeroFlag(t *testing.T) {

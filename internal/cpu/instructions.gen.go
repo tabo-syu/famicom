@@ -22,10 +22,10 @@ func (i instruction) Call(cpu *CPU) error {
 		err = cpu.AND(i.mode)
 	// case "ASL":
 	// 	err = cpu.ASL(i.mode)
-	// case "BCC":
-	// 	err = cpu.BCC(i.mode)
-	// case "BCS":
-	// 	err = cpu.BCS(i.mode)
+	case "BCC":
+		err = cpu.BCC(i.mode)
+	case "BCS":
+		err = cpu.BCS(i.mode)
 	// case "BEQ":
 	// 	err = cpu.BEQ(i.mode)
 	// case "BIT":
