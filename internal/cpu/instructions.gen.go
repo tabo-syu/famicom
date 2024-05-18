@@ -72,8 +72,8 @@ func (i instruction) Call(cpu *CPU) error {
 		err = cpu.INY(i.mode)
 	case "JMP":
 		err = cpu.JMP(i.mode)
-	// case "JSR":
-	// 	err = cpu.JSR(i.mode)
+	case "JSR":
+		err = cpu.JSR(i.mode)
 	case "LDA":
 		err = cpu.LDA(i.mode)
 	case "LDX":
@@ -100,8 +100,8 @@ func (i instruction) Call(cpu *CPU) error {
 	// 	err = cpu.ROR(i.mode)
 	// case "RTI":
 	// 	err = cpu.RTI(i.mode)
-	// case "RTS":
-	// 	err = cpu.RTS(i.mode)
+	case "RTS":
+		err = cpu.RTS(i.mode)
 	// case "SBC":
 	// 	err = cpu.SBC(i.mode)
 	case "SEC":

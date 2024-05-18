@@ -406,6 +406,21 @@ func (cpu *CPU) JMP(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) JSR(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+
+	cpu.pushStackUint16(cpu.programCounter + 2 - 1)
+	cpu.programCounter = address - 2
+
+	return nil
+}
+
+func (cpu *CPU) RTS(mode addressingMode) error {
+	cpu.programCounter = cpu.popStackUint16() + 1
+
+	return nil
+}
+
 func (cpu *CPU) getOperandAddress(mode addressingMode) uint16 {
 	switch mode {
 	case ImmediateMode:
@@ -485,10 +500,25 @@ func (cpu *CPU) pushStack(value uint8) {
 }
 
 func (cpu *CPU) popStack() uint8 {
-	value := cpu.memory.Read(cpu.stackPointer.toAddress())
 	cpu.stackPointer++
+	value := cpu.memory.Read(cpu.stackPointer.toAddress())
 
 	return value
+}
+
+func (cpu *CPU) pushStackUint16(value uint16) {
+	high := uint8(value >> 8)
+	low := uint8(value & 0x00_FF)
+
+	cpu.pushStack(high)
+	cpu.pushStack(low)
+}
+
+func (cpu *CPU) popStackUint16() uint16 {
+	low := uint16(cpu.popStack())
+	high := uint16(cpu.popStack())
+
+	return high<<8 | low
 }
 
 func (cpu *CPU) updateZeroFlag(value uint8) {

@@ -655,7 +655,7 @@ func Test_PLA_PopAccumulator(t *testing.T) {
 	cpu.Load([]uint8{0x68, 0x00})
 	cpu.Reset()
 	cpu.stackPointer = stackPointer(0x05)
-	cpu.memory.Write(0x01_05, 0x22)
+	cpu.memory.Write(0x01_06, 0x22)
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x06), uint8(cpu.stackPointer))
@@ -667,7 +667,7 @@ func Test_PLA_SetNegativeFlag(t *testing.T) {
 	cpu.Load([]uint8{0x68, 0x00})
 	cpu.Reset()
 	cpu.stackPointer = stackPointer(0x05)
-	cpu.memory.Write(0x01_05, 0b0100_0000)
+	cpu.memory.Write(0x01_06, 0b0100_0000)
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x06), uint8(cpu.stackPointer))
@@ -680,11 +680,41 @@ func Test_PLP_PopStatus(t *testing.T) {
 	cpu.Load([]uint8{0x28, 0x00})
 	cpu.Reset()
 	cpu.stackPointer = stackPointer(0x05)
-	cpu.memory.Write(0x01_05, 0b1010_0110)
+	cpu.memory.Write(0x01_06, 0b1010_0110)
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x06), uint8(cpu.stackPointer))
 	assert.Equal(t, uint8(0b1010_0110), uint8(cpu.status))
+}
+
+func Test_RTS_PopStack(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x60, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x01_FF, 0x05)
+	cpu.memory.Write(0x01_FE, 0x06)
+	cpu.memory.Write(0x05_07, 0xE8)
+	cpu.memory.Write(0x05_08, 0x00)
+	cpu.stackPointer = stackPointer(0xFD)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+	assert.Equal(t, uint16(0x05_09), cpu.programCounter)
+	assert.Equal(t, uint8(0xFF), uint8(cpu.stackPointer))
+}
+
+func Test_JSRandRTS(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x20, 0x30, 0x40, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x40_30, 0xE8)
+	cpu.memory.Write(0x40_31, 0x60)
+	cpu.memory.Write(0x40_32, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint16(0x80_04), cpu.programCounter)
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+	assert.Equal(t, uint8(0xFF), uint8(cpu.stackPointer))
 }
 
 func Test_TAX_MoveAtoX(t *testing.T) {
@@ -1077,6 +1107,20 @@ func Test_JMP_Indirect(t *testing.T) {
 
 	assert.Equal(t, uint16(0x55_46), cpu.programCounter)
 	assert.Equal(t, uint8(0x01), cpu.registerX)
+}
+
+func Test_JSR_PushStack(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x20, 0x30, 0x40, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x40_30, 0xE8)
+	cpu.memory.Write(0x40_31, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint16(0x40_32), cpu.programCounter)
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+	assert.Equal(t, uint8(0x80), cpu.memory.Read(0x01_FF))
+	assert.Equal(t, uint8(0x02), cpu.memory.Read(0x01_FE))
 }
 
 func Test_STA_Immediate(t *testing.T) {
