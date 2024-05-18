@@ -32,6 +32,33 @@ func (cpu *CPU) AND(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) ASL(mode addressingMode) error {
+	var (
+		value   uint8
+		address uint16
+	)
+	if mode == AccumulatorMode {
+		value = cpu.registerA
+	} else {
+		address = cpu.getOperandAddress(mode)
+		value = cpu.memory.Read(address)
+	}
+
+	cpu.status.setC(value&0b1000_0000 != 0)
+	value = value << 1
+
+	if mode == AccumulatorMode {
+		cpu.registerA = value
+	} else {
+		cpu.memory.Write(address, value)
+	}
+
+	cpu.updateZeroFlag(cpu.registerA)
+	cpu.updateNegativeFlag(value)
+
+	return nil
+}
+
 func (cpu *CPU) BCC(mode addressingMode) error {
 	if !cpu.status.c() {
 		address := cpu.getOperandAddress(mode)
@@ -173,6 +200,32 @@ func (cpu *CPU) LDY(mode addressingMode) error {
 
 	cpu.registerY = value
 	cpu.updateZeroAndNegativeFlags(cpu.registerY)
+
+	return nil
+}
+
+func (cpu *CPU) LSR(mode addressingMode) error {
+	var (
+		value   uint8
+		address uint16
+	)
+	if mode == AccumulatorMode {
+		value = cpu.registerA
+	} else {
+		address = cpu.getOperandAddress(mode)
+		value = cpu.memory.Read(address)
+	}
+
+	cpu.status.setC(value&0b0000_0001 != 0)
+	value = value >> 1
+
+	if mode == AccumulatorMode {
+		cpu.registerA = value
+	} else {
+		cpu.memory.Write(address, value)
+	}
+
+	cpu.updateZeroAndNegativeFlags(value)
 
 	return nil
 }

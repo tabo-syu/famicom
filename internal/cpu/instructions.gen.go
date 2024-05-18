@@ -20,8 +20,8 @@ func (i instruction) Call(cpu *CPU) error {
 	// 	err = cpu.ADC(i.mode)
 	case "AND":
 		err = cpu.AND(i.mode)
-	// case "ASL":
-	// 	err = cpu.ASL(i.mode)
+	case "ASL":
+		err = cpu.ASL(i.mode)
 	case "BCC":
 		err = cpu.BCC(i.mode)
 	case "BCS":
@@ -80,8 +80,8 @@ func (i instruction) Call(cpu *CPU) error {
 		err = cpu.LDX(i.mode)
 	case "LDY":
 		err = cpu.LDY(i.mode)
-	// case "LSR":
-	// 	err = cpu.LSR(i.mode)
+	case "LSR":
+		err = cpu.LSR(i.mode)
 	case "NOP":
 		err = cpu.NOP(i.mode)
 	case "ORA":

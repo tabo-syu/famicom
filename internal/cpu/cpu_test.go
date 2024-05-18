@@ -6,9 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TODO: Test Addressing mode
-// - AccumulatorMode
-
 func Test_AND_Accumulator(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0x29, 0b1001_0110, 0x00})
@@ -39,6 +36,32 @@ func Test_AND_SetNegativeFlag(t *testing.T) {
 
 	assert.False(t, cpu.status.z())
 	assert.True(t, cpu.status.n())
+}
+
+func Test_ASL_ArithmeticShiftLeft(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x0A, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b1101_0101
+	cpu.Run()
+
+	assert.True(t, cpu.status.c())
+	assert.False(t, cpu.status.z())
+	assert.True(t, cpu.status.n())
+	assert.Equal(t, uint8(0b1010_1010), cpu.registerA)
+}
+
+func Test_ASL_ShiftFromMemory(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x06, 0x05, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x05, 0b1101_0101)
+	cpu.Run()
+
+	assert.True(t, cpu.status.c())
+	assert.True(t, cpu.status.z())
+	assert.True(t, cpu.status.n())
+	assert.Equal(t, uint8(0b1010_1010), cpu.memory.Read(0x05))
 }
 
 func Test_BCC_WhenSetCarry(t *testing.T) {
@@ -592,6 +615,32 @@ func Test_LDY_AbsoluteX(t *testing.T) {
 	cpu.Run()
 
 	assert.Equal(t, uint8(0x13), cpu.registerY)
+}
+
+func Test_LSR_LogicalShiftRight(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x4A, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b1001_0101
+	cpu.Run()
+
+	assert.True(t, cpu.status.c())
+	assert.False(t, cpu.status.z())
+	assert.False(t, cpu.status.n())
+	assert.Equal(t, uint8(0b0100_1010), cpu.registerA)
+}
+
+func Test_LSR_ShiftFromMemory(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x46, 0x05, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x05, 0b1001_0101)
+	cpu.Run()
+
+	assert.True(t, cpu.status.c())
+	assert.False(t, cpu.status.z())
+	assert.False(t, cpu.status.n())
+	assert.Equal(t, uint8(0b0100_1010), cpu.memory.Read(0x05))
 }
 
 func Test_NOP_NoOperation(t *testing.T) {
