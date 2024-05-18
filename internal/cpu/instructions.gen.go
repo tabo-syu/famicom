@@ -88,12 +88,12 @@ func (i instruction) Call(cpu *CPU) error {
 		err = cpu.ORA(i.mode)
 	case "PHA":
 		err = cpu.PHA(i.mode)
-	// case "PHP":
-	// 	err = cpu.PHP(i.mode)
+	case "PHP":
+		err = cpu.PHP(i.mode)
 	case "PLA":
 		err = cpu.PLA(i.mode)
-	// case "PLP":
-	// 	err = cpu.PLP(i.mode)
+	case "PLP":
+		err = cpu.PLP(i.mode)
 	// case "ROL":
 	// 	err = cpu.ROL(i.mode)
 	// case "ROR":

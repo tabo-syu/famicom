@@ -194,9 +194,21 @@ func (cpu *CPU) PHA(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) PHP(mode addressingMode) error {
+	cpu.pushStack(uint8(cpu.status))
+
+	return nil
+}
+
 func (cpu *CPU) PLA(mode addressingMode) error {
 	cpu.registerA = cpu.popStack()
 	cpu.updateZeroAndNegativeFlags(cpu.registerA)
+
+	return nil
+}
+
+func (cpu *CPU) PLP(mode addressingMode) error {
+	cpu.status = status(cpu.popStack())
 
 	return nil
 }

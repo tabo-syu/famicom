@@ -638,6 +638,18 @@ func Test_PHA_PushAccumulator(t *testing.T) {
 	assert.Equal(t, uint8(0x22), cpu.memory.Read(0x01_05))
 }
 
+func Test_PHP_PushStatus(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x08, 0x00})
+	cpu.Reset()
+	cpu.stackPointer = stackPointer(0x05)
+	cpu.status = 0b1010_0110
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x04), uint8(cpu.stackPointer))
+	assert.Equal(t, uint8(0b1010_0110), cpu.memory.Read(0x01_05))
+}
+
 func Test_PLA_PopAccumulator(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0x68, 0x00})
@@ -661,6 +673,18 @@ func Test_PLA_SetNegativeFlag(t *testing.T) {
 	assert.Equal(t, uint8(0x06), uint8(cpu.stackPointer))
 	assert.Equal(t, uint8(0b0100_0000), cpu.registerA)
 	assert.True(t, cpu.status.n())
+}
+
+func Test_PLP_PopStatus(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x28, 0x00})
+	cpu.Reset()
+	cpu.stackPointer = stackPointer(0x05)
+	cpu.memory.Write(0x01_05, 0b1010_0110)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x06), uint8(cpu.stackPointer))
+	assert.Equal(t, uint8(0b1010_0110), uint8(cpu.status))
 }
 
 func Test_TAX_MoveAtoX(t *testing.T) {
