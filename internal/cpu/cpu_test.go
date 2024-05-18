@@ -123,6 +123,82 @@ func Test_BCS_WhenMinusOperand(t *testing.T) {
 	assert.Equal(t, uint16(0x7F_FA), cpu.programCounter)
 }
 
+func Test_BEQ_WhenSetZero(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xF0, 0x10, 0x00})
+	cpu.Reset()
+	cpu.status.setZ(true)
+	cpu.memory.Write(0x80_12, 0xE8)
+	cpu.memory.Write(0x80_13, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+	assert.Equal(t, uint16(0x80_14), cpu.programCounter)
+}
+
+func Test_BEQ_WhenUnsetZero(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xF0, 0x10, 0x00})
+	cpu.Reset()
+	cpu.status.setZ(false)
+	cpu.memory.Write(0x80_10, 0xE8)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x00), cpu.registerX)
+	assert.Equal(t, uint16(0x80_03), cpu.programCounter)
+}
+
+func Test_BEQ_WhenMinusOperand(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xF0, 0xF6, 0x00})
+	cpu.Reset()
+	cpu.status.setZ(true)
+	cpu.memory.Write(0x7F_F8, 0xE8)
+	cpu.memory.Write(0x7F_F9, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+	assert.Equal(t, uint16(0x7F_FA), cpu.programCounter)
+}
+
+func Test_BNE_WhenSetZero(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xD0, 0x10, 0x00})
+	cpu.Reset()
+	cpu.status.setZ(true)
+	cpu.memory.Write(0x80_10, 0xE8)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x00), cpu.registerX)
+	assert.Equal(t, uint16(0x80_03), cpu.programCounter)
+}
+
+func Test_BNE_WhenUnsetZero(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xD0, 0x10, 0x00})
+	cpu.Reset()
+	cpu.status.setZ(false)
+	cpu.memory.Write(0x80_12, 0xE8)
+	cpu.memory.Write(0x80_13, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+	assert.Equal(t, uint16(0x80_14), cpu.programCounter)
+}
+
+func Test_BNE_WhenMinusOperand(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xD0, 0xF6, 0x00})
+	cpu.Reset()
+	cpu.status.setZ(false)
+	cpu.memory.Write(0x7F_F8, 0xE8)
+	cpu.memory.Write(0x7F_F9, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+	assert.Equal(t, uint16(0x7F_FA), cpu.programCounter)
+}
+
 func Test_LDA_SetZeroFlag(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0xA9, 0x00, 0x00})

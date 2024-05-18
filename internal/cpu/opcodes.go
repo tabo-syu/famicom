@@ -56,6 +56,24 @@ func (cpu *CPU) BCS(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) BEQ(mode addressingMode) error {
+	if cpu.status.z() {
+		address := cpu.getOperandAddress(mode)
+		cpu.programCounter = address
+	}
+
+	return nil
+}
+
+func (cpu *CPU) BNE(mode addressingMode) error {
+	if !cpu.status.z() {
+		address := cpu.getOperandAddress(mode)
+		cpu.programCounter = address
+	}
+
+	return nil
+}
+
 func (cpu *CPU) SEC(mode addressingMode) error {
 	cpu.status.setC(true)
 
