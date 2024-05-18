@@ -177,6 +177,10 @@ func (cpu *CPU) LDY(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) NOP(mode addressingMode) error {
+	return nil
+}
+
 func (cpu *CPU) ORA(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 	value := cpu.memory.Read(address)

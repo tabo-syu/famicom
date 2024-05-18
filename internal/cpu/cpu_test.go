@@ -594,6 +594,16 @@ func Test_LDY_AbsoluteX(t *testing.T) {
 	assert.Equal(t, uint8(0x13), cpu.registerY)
 }
 
+func Test_NOP_NoOperation(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xEA, 0xE8, 0x00})
+	cpu.Reset()
+	cpu.Run()
+
+	assert.Equal(t, uint16(0x80_03), cpu.programCounter)
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+}
+
 func Test_ORA_Accumulator(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0x09, 0b1001_0110, 0x00})

@@ -82,8 +82,8 @@ func (i instruction) Call(cpu *CPU) error {
 		err = cpu.LDY(i.mode)
 	// case "LSR":
 	// 	err = cpu.LSR(i.mode)
-	// case "NOP":
-	// 	err = cpu.NOP(i.mode)
+	case "NOP":
+		err = cpu.NOP(i.mode)
 	case "ORA":
 		err = cpu.ORA(i.mode)
 	case "PHA":
