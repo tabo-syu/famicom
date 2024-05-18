@@ -270,6 +270,67 @@ func (cpu *CPU) PLP(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) ROL(mode addressingMode) error {
+	var (
+		value   uint8
+		address uint16
+	)
+	if mode == AccumulatorMode {
+		value = cpu.registerA
+	} else {
+		address = cpu.getOperandAddress(mode)
+		value = cpu.memory.Read(address)
+	}
+
+	var new0Bit = 0
+	if cpu.status.c() {
+		new0Bit = 1
+	}
+	cpu.status.setC(value&0b1000_0000 != 0)
+	value = value<<1 | uint8(new0Bit)
+
+	if mode == AccumulatorMode {
+		cpu.registerA = value
+	} else {
+		cpu.memory.Write(address, value)
+	}
+
+	cpu.updateZeroAndNegativeFlags(value)
+
+	return nil
+}
+
+func (cpu *CPU) ROR(mode addressingMode) error {
+	var (
+		value   uint8
+		address uint16
+	)
+	if mode == AccumulatorMode {
+		value = cpu.registerA
+	} else {
+		address = cpu.getOperandAddress(mode)
+		value = cpu.memory.Read(address)
+	}
+
+	var new7Bit = 0b0000_0000
+	if cpu.status.c() {
+		new7Bit = 0b1000_0000
+	}
+	cpu.status.setC(value&0b0000_0001 != 0)
+	value = value>>1 | uint8(new7Bit)
+
+	if mode == AccumulatorMode {
+		cpu.registerA = value
+	} else {
+		cpu.memory.Write(address, value)
+	}
+
+	cpu.updateZeroFlag(cpu.registerA)
+	cpu.updateNegativeFlag(value)
+
+	return nil
+}
+
 func (cpu *CPU) TAX(mode addressingMode) error {
 	cpu.registerX = cpu.registerA
 	cpu.updateZeroAndNegativeFlags(cpu.registerX)

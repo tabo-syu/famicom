@@ -94,10 +94,10 @@ func (i instruction) Call(cpu *CPU) error {
 		err = cpu.PLA(i.mode)
 	case "PLP":
 		err = cpu.PLP(i.mode)
-	// case "ROL":
-	// 	err = cpu.ROL(i.mode)
-	// case "ROR":
-	// 	err = cpu.ROR(i.mode)
+	case "ROL":
+		err = cpu.ROL(i.mode)
+	case "ROR":
+		err = cpu.ROR(i.mode)
 	// case "RTI":
 	// 	err = cpu.RTI(i.mode)
 	case "RTS":

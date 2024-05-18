@@ -746,6 +746,91 @@ func Test_PLP_PopStatus(t *testing.T) {
 	assert.Equal(t, uint8(0b1010_0110), uint8(cpu.status))
 }
 
+func Test_ROL_Set0Bit(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x2A, 0x00})
+	cpu.Reset()
+	cpu.status.setC(true)
+	cpu.registerA = 0b1001_0101
+	cpu.Run()
+
+	assert.True(t, cpu.status.c())
+	assert.False(t, cpu.status.z())
+	assert.False(t, cpu.status.n())
+	assert.Equal(t, uint8(0b0010_1011), cpu.registerA)
+}
+
+func Test_ROL_Unset0Bit(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x2A, 0x00})
+	cpu.Reset()
+	cpu.status.setC(false)
+	cpu.registerA = 0b0101_1001
+	cpu.Run()
+
+	assert.False(t, cpu.status.c())
+	assert.False(t, cpu.status.z())
+	assert.True(t, cpu.status.n())
+	assert.Equal(t, uint8(0b1011_0010), cpu.registerA)
+}
+
+func Test_ROL_RotateFromMemory(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x2E, 0x30, 0x40, 0x00})
+	cpu.Reset()
+	cpu.status.setC(true)
+	cpu.memory.Write(0x40_30, 0b1001_0101)
+	cpu.Run()
+
+	assert.True(t, cpu.status.c())
+	assert.False(t, cpu.status.z())
+	assert.False(t, cpu.status.n())
+	assert.Equal(t, uint8(0b0010_1011), cpu.memory.Read(0x40_30))
+}
+
+func Test_ROR_Set7Bit(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x6A, 0x00})
+	cpu.Reset()
+	cpu.status.setC(true)
+	cpu.registerA = 0b1001_0101
+	cpu.Run()
+
+	assert.True(t, cpu.status.c())
+	assert.False(t, cpu.status.z())
+	assert.True(t, cpu.status.n())
+	assert.Equal(t, uint8(0b1100_1010), cpu.registerA)
+}
+
+func Test_ROR_Unset7Bit(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x6A, 0x00})
+	cpu.Reset()
+	cpu.status.setC(false)
+	cpu.registerA = 0b0000_0001
+	cpu.Run()
+
+	assert.True(t, cpu.status.c())
+	assert.True(t, cpu.status.z())
+	assert.False(t, cpu.status.n())
+	assert.Equal(t, uint8(0b0000_0000), cpu.registerA)
+}
+
+func Test_ROR_RotateFromMemory(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x76, 0x30, 0x00})
+	cpu.Reset()
+	cpu.registerX = 0x02
+	cpu.status.setC(true)
+	cpu.memory.Write(0x32, 0b1001_0101)
+	cpu.Run()
+
+	assert.True(t, cpu.status.c())
+	assert.True(t, cpu.status.z())
+	assert.True(t, cpu.status.n())
+	assert.Equal(t, uint8(0b1100_1010), cpu.memory.Read(0x32))
+}
+
 func Test_RTS_PopStack(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0x60, 0x00})
