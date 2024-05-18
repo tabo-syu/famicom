@@ -303,6 +303,14 @@ func (cpu *CPU) INY(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) JMP(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+
+	cpu.programCounter = address - 2
+
+	return nil
+}
+
 func (cpu *CPU) getOperandAddress(mode addressingMode) uint16 {
 	switch mode {
 	case ImmediateMode:
@@ -335,6 +343,12 @@ func (cpu *CPU) getOperandAddress(mode addressingMode) uint16 {
 	case AbsoluteYMode:
 		base := cpu.memory.ReadUint16(cpu.programCounter)
 		address := base + uint16(cpu.registerY)
+
+		return address
+
+	case IndirectMode:
+		base := cpu.memory.ReadUint16(cpu.programCounter)
+		address := cpu.memory.ReadUint16(base)
 
 		return address
 

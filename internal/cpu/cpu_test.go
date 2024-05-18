@@ -684,6 +684,32 @@ func Test_INY_OverflowY(t *testing.T) {
 	assert.Equal(t, uint8(0x01), cpu.registerY)
 }
 
+func Test_JMP_Absolute(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x4C, 0x30, 0x40, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x40_30, 0xE8)
+	cpu.memory.Write(0x40_31, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint16(0x40_32), cpu.programCounter)
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+}
+
+func Test_JMP_Indirect(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x6C, 0x30, 0x40, 0x00})
+	cpu.Reset()
+	cpu.memory.Write(0x40_30, 0x44)
+	cpu.memory.Write(0x40_31, 0x55)
+	cpu.memory.Write(0x55_44, 0xE8)
+	cpu.memory.Write(0x55_45, 0x00)
+	cpu.Run()
+
+	assert.Equal(t, uint16(0x55_46), cpu.programCounter)
+	assert.Equal(t, uint8(0x01), cpu.registerX)
+}
+
 func Test_STA_Immediate(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0x85, 0x01, 0x00})
