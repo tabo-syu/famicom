@@ -33,8 +33,8 @@ func NewCPU() CPU {
 }
 
 func (cpu *CPU) Load(program []uint8) {
-	copy(cpu.memory[0x8000:], program)
-	cpu.memory.WriteUint16(0xFF_FC, 0x80_00)
+	copy(cpu.memory[0x06_00:], program)
+	cpu.memory.WriteUint16(0xFF_FC, 0x06_00)
 }
 
 func (cpu *CPU) Reset() {
@@ -48,7 +48,13 @@ func (cpu *CPU) Reset() {
 }
 
 func (cpu *CPU) Run() {
+	cpu.RunWithCallback(func(cpu *CPU) {})
+}
+
+func (cpu *CPU) RunWithCallback(callback func(*CPU)) {
 	for {
+		callback(cpu)
+
 		code := cpu.memory.Read(cpu.programCounter)
 		cpu.programCounter++
 
