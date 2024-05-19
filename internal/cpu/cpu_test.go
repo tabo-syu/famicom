@@ -937,6 +937,72 @@ func Test_RTS_PopStack(t *testing.T) {
 	assert.Equal(t, uint8(0xFF), uint8(cpu.stackPointer))
 }
 
+func Test_SBC_Immediate(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xE9, 0b0111_1111, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b0111_1110
+	cpu.Run()
+
+	// 0b0111_1110 - 0b0111_1111
+	// 0b0111_1110 + 0b1000_0000 + 1
+	//
+	//   0b0111_1110
+	// + 0b1000_0001
+	// -------------
+	//   0b1111_1111 + (carry-1)
+
+	assert.False(t, cpu.status.c())
+	assert.True(t, cpu.status.n())
+	assert.False(t, cpu.status.o())
+	assert.False(t, cpu.status.z())
+	assert.Equal(t, uint8(0b1111_1110), cpu.registerA)
+}
+
+func Test_SBC_SetCarryFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xE9, 0b0000_0010, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b0000_0011
+	cpu.Run()
+
+	// 0b0000_0011 - 0b0000_0010
+	// 0b0000_0011 + 0b1111_1101 + 1
+	//
+	//   0b0000_0011
+	// + 0b1111_1110
+	// -------------
+	// 1 0b0000_0001 + (carry-1)
+
+	assert.True(t, cpu.status.c())
+	assert.False(t, cpu.status.n())
+	assert.False(t, cpu.status.o())
+	assert.True(t, cpu.status.z())
+	assert.Equal(t, uint8(0b0000_0000), cpu.registerA)
+}
+
+func Test_SBC_SetCarryAndOverflowFlags(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0xE9, 0b0111_1111, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b1011_0000
+	cpu.Run()
+
+	// 0b1011_0000 - 0b0111_1111
+	// 0b1011_0000 + 0b1000_0000 + 1
+	//
+	//   0b1011_0000
+	// + 0b1000_0001
+	// -------------
+	// 1 0b0011_0001 + (carry-1)
+
+	assert.True(t, cpu.status.c())
+	assert.False(t, cpu.status.n())
+	assert.True(t, cpu.status.o())
+	assert.False(t, cpu.status.z())
+	assert.Equal(t, uint8(0b0011_0000), cpu.registerA)
+}
+
 func Test_JSRandRTS(t *testing.T) {
 	cpu := NewCPU()
 	cpu.Load([]uint8{0x20, 0x30, 0x40, 0x00})

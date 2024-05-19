@@ -102,8 +102,8 @@ func (i instruction) Call(cpu *CPU) error {
 		err = cpu.RTI(i.mode)
 	case "RTS":
 		err = cpu.RTS(i.mode)
-	// case "SBC":
-	// 	err = cpu.SBC(i.mode)
+	case "SBC":
+		err = cpu.SBC(i.mode)
 	case "SEC":
 		err = cpu.SEC(i.mode)
 	case "SED":

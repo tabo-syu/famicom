@@ -385,6 +385,38 @@ func (cpu *CPU) RTI(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) SBC(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+	value := cpu.memory.Read(address)
+
+	var carry uint8
+	if cpu.status.c() {
+		carry = 1
+	}
+
+	aSign := int16(cpu.registerA) & 0b1000_0000
+	vSign := int16(value) & 0b1000_0000
+	mayOverflow := aSign^vSign == 0b1000_0000
+
+	result := int16(cpu.registerA) - int16(value) - int16(1-carry)
+
+	rSign := result & 0b1000_0000
+	isDiffSign := rSign != aSign
+	isOverflow := mayOverflow && isDiffSign
+	if isOverflow {
+		cpu.status.setO(true)
+	}
+	if result >= 0 {
+		cpu.status.setC(true)
+	}
+
+	cpu.registerA = byte(result & 0xFF)
+	cpu.updateZeroAndNegativeFlags(cpu.registerA)
+
+	return nil
+}
+
+
 func (cpu *CPU) TAX(mode addressingMode) error {
 	cpu.registerX = cpu.registerA
 	cpu.updateZeroAndNegativeFlags(cpu.registerX)
