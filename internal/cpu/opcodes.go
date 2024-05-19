@@ -182,41 +182,163 @@ func (cpu *CPU) BVS(mode addressingMode) error {
 	return nil
 }
 
-func (cpu *CPU) SEC(mode addressingMode) error {
-	cpu.status.setC(true)
+func (cpu *CPU) CLC(mode addressingMode) error {
+	cpu.status.setC(false)
 
 	return nil
 }
 
-func (cpu *CPU) SED(mode addressingMode) error {
-	cpu.status.setD(true)
+func (cpu *CPU) CLD(mode addressingMode) error {
+	cpu.status.setD(false)
 
 	return nil
 }
 
-func (cpu *CPU) SEI(mode addressingMode) error {
-	cpu.status.setI(true)
+func (cpu *CPU) CLI(mode addressingMode) error {
+	cpu.status.setI(false)
 
 	return nil
 }
 
-func (cpu *CPU) STA(mode addressingMode) error {
+func (cpu *CPU) CLV(mode addressingMode) error {
+	cpu.status.setO(false)
+
+	return nil
+}
+
+func (cpu *CPU) CMP(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
-	cpu.memory.Write(address, cpu.registerA)
+
+	value := cpu.memory.Read(address)
+	if cpu.registerA == value {
+		cpu.status.setZ(true)
+	}
+	if cpu.registerA >= value {
+		cpu.status.setC(true)
+	}
+	if value&0b1000_0000 != 0 {
+		cpu.status.setN(true)
+	} else {
+		cpu.status.setN(false)
+	}
 
 	return nil
 }
 
-func (cpu *CPU) STX(mode addressingMode) error {
+func (cpu *CPU) CPX(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
-	cpu.memory.Write(address, cpu.registerX)
+
+	value := cpu.memory.Read(address)
+	if cpu.registerX == value {
+		cpu.status.setZ(true)
+	}
+	if cpu.registerX >= value {
+		cpu.status.setC(true)
+	}
+	if value&0b1000_0000 != 0 {
+		cpu.status.setN(true)
+	} else {
+		cpu.status.setN(false)
+	}
 
 	return nil
 }
 
-func (cpu *CPU) STY(mode addressingMode) error {
+func (cpu *CPU) CPY(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
-	cpu.memory.Write(address, cpu.registerY)
+
+	value := cpu.memory.Read(address)
+	if cpu.registerY == value {
+		cpu.status.setZ(true)
+	}
+	if cpu.registerY >= value {
+		cpu.status.setC(true)
+	}
+	if value&0b1000_0000 != 0 {
+		cpu.status.setN(true)
+	} else {
+		cpu.status.setN(false)
+	}
+
+	return nil
+}
+
+func (cpu *CPU) DEC(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+
+	value := cpu.memory.Read(address)
+	value--
+	cpu.memory.Write(address, value)
+
+	cpu.updateZeroAndNegativeFlags(value)
+
+	return nil
+}
+
+func (cpu *CPU) DEX(mode addressingMode) error {
+	cpu.registerX--
+	cpu.updateZeroAndNegativeFlags(cpu.registerX)
+
+	return nil
+}
+
+func (cpu *CPU) DEY(mode addressingMode) error {
+	cpu.registerY--
+	cpu.updateZeroAndNegativeFlags(cpu.registerY)
+
+	return nil
+}
+
+func (cpu *CPU) EOR(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+	value := cpu.memory.Read(address)
+
+	result := cpu.registerA ^ value
+	cpu.registerA = result
+	cpu.updateZeroAndNegativeFlags(result)
+
+	return nil
+}
+
+func (cpu *CPU) INC(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+
+	value := cpu.memory.Read(address)
+	value++
+	cpu.memory.Write(address, value)
+
+	cpu.updateZeroAndNegativeFlags(value)
+
+	return nil
+}
+
+func (cpu *CPU) INX(mode addressingMode) error {
+	cpu.registerX++
+	cpu.updateZeroAndNegativeFlags(cpu.registerX)
+
+	return nil
+}
+
+func (cpu *CPU) INY(mode addressingMode) error {
+	cpu.registerY++
+	cpu.updateZeroAndNegativeFlags(cpu.registerY)
+
+	return nil
+}
+
+func (cpu *CPU) JMP(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+
+	cpu.programCounter = address - 2
+
+	return nil
+}
+
+func (cpu *CPU) JSR(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+
+	cpu.pushStackUint16(cpu.programCounter + 2 - 1)
+	cpu.programCounter = address - 2
 
 	return nil
 }
@@ -385,6 +507,12 @@ func (cpu *CPU) RTI(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) RTS(mode addressingMode) error {
+	cpu.programCounter = cpu.popStackUint16() + 1
+
+	return nil
+}
+
 func (cpu *CPU) SBC(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 	value := cpu.memory.Read(address)
@@ -416,6 +544,44 @@ func (cpu *CPU) SBC(mode addressingMode) error {
 	return nil
 }
 
+func (cpu *CPU) SEC(mode addressingMode) error {
+	cpu.status.setC(true)
+
+	return nil
+}
+
+func (cpu *CPU) SED(mode addressingMode) error {
+	cpu.status.setD(true)
+
+	return nil
+}
+
+func (cpu *CPU) SEI(mode addressingMode) error {
+	cpu.status.setI(true)
+
+	return nil
+}
+
+func (cpu *CPU) STA(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+	cpu.memory.Write(address, cpu.registerA)
+
+	return nil
+}
+
+func (cpu *CPU) STX(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+	cpu.memory.Write(address, cpu.registerX)
+
+	return nil
+}
+
+func (cpu *CPU) STY(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+	cpu.memory.Write(address, cpu.registerY)
+
+	return nil
+}
 
 func (cpu *CPU) TAX(mode addressingMode) error {
 	cpu.registerX = cpu.registerA
@@ -454,182 +620,6 @@ func (cpu *CPU) TXS(mode addressingMode) error {
 func (cpu *CPU) TYA(mode addressingMode) error {
 	cpu.registerA = cpu.registerY
 	cpu.updateZeroAndNegativeFlags(cpu.registerA)
-
-	return nil
-}
-
-func (cpu *CPU) CLC(mode addressingMode) error {
-	cpu.status.setC(false)
-
-	return nil
-}
-
-func (cpu *CPU) CLD(mode addressingMode) error {
-	cpu.status.setD(false)
-
-	return nil
-}
-
-func (cpu *CPU) CLI(mode addressingMode) error {
-	cpu.status.setI(false)
-
-	return nil
-}
-
-func (cpu *CPU) CLV(mode addressingMode) error {
-	cpu.status.setO(false)
-
-	return nil
-}
-
-func (cpu *CPU) CMP(mode addressingMode) error {
-	address := cpu.getOperandAddress(mode)
-
-	value := cpu.memory.Read(address)
-	if cpu.registerA == value {
-		cpu.status.setZ(true)
-	}
-	if cpu.registerA >= value {
-		cpu.status.setC(true)
-	}
-	if value&0b1000_0000 != 0 {
-		cpu.status.setN(true)
-	} else {
-		cpu.status.setN(false)
-	}
-
-	return nil
-}
-
-func (cpu *CPU) CPX(mode addressingMode) error {
-	address := cpu.getOperandAddress(mode)
-
-	value := cpu.memory.Read(address)
-	if cpu.registerX == value {
-		cpu.status.setZ(true)
-	}
-	if cpu.registerX >= value {
-		cpu.status.setC(true)
-	}
-	if value&0b1000_0000 != 0 {
-		cpu.status.setN(true)
-	} else {
-		cpu.status.setN(false)
-	}
-
-	return nil
-}
-
-func (cpu *CPU) CPY(mode addressingMode) error {
-	address := cpu.getOperandAddress(mode)
-
-	value := cpu.memory.Read(address)
-	if cpu.registerY == value {
-		cpu.status.setZ(true)
-	}
-	if cpu.registerY >= value {
-		cpu.status.setC(true)
-	}
-	if value&0b1000_0000 != 0 {
-		cpu.status.setN(true)
-	} else {
-		cpu.status.setN(false)
-	}
-
-	return nil
-}
-
-func (cpu *CPU) DEC(mode addressingMode) error {
-	address := cpu.getOperandAddress(mode)
-
-	value := cpu.memory.Read(address)
-	value--
-	cpu.memory.Write(address, value)
-
-	cpu.updateZeroAndNegativeFlags(value)
-
-	return nil
-}
-
-func (cpu *CPU) DEX(mode addressingMode) error {
-	cpu.registerX--
-	cpu.updateZeroAndNegativeFlags(cpu.registerX)
-
-	return nil
-}
-
-func (cpu *CPU) DEY(mode addressingMode) error {
-	cpu.registerY--
-	cpu.updateZeroAndNegativeFlags(cpu.registerY)
-
-	return nil
-}
-
-func (cpu *CPU) EOR(mode addressingMode) error {
-	address := cpu.getOperandAddress(mode)
-	value := cpu.memory.Read(address)
-
-	result := cpu.registerA ^ value
-	cpu.registerA = result
-	cpu.updateZeroAndNegativeFlags(result)
-
-	return nil
-}
-
-func (cpu *CPU) INC(mode addressingMode) error {
-	address := cpu.getOperandAddress(mode)
-
-	value := cpu.memory.Read(address)
-	value++
-	cpu.memory.Write(address, value)
-
-	cpu.updateZeroAndNegativeFlags(value)
-
-	return nil
-}
-
-func (cpu *CPU) INX(mode addressingMode) error {
-	cpu.registerX++
-	cpu.updateZeroAndNegativeFlags(cpu.registerX)
-
-	return nil
-}
-
-func (cpu *CPU) INY(mode addressingMode) error {
-	cpu.registerY++
-	cpu.updateZeroAndNegativeFlags(cpu.registerY)
-
-	return nil
-}
-
-func (cpu *CPU) JMP(mode addressingMode) error {
-	address := cpu.getOperandAddress(mode)
-
-	cpu.programCounter = address - 2
-
-	return nil
-}
-
-func (cpu *CPU) JSR(mode addressingMode) error {
-	address := cpu.getOperandAddress(mode)
-
-	cpu.pushStackUint16(cpu.programCounter + 2 - 1)
-	cpu.programCounter = address - 2
-
-	return nil
-}
-
-func (cpu *CPU) RTS(mode addressingMode) error {
-	cpu.programCounter = cpu.popStackUint16() + 1
-
-	return nil
-}
-
-func (cpu *CPU) SBC(mode addressingMode) error {
-	// address := cpu.getOperandAddress(mode)
-	// value := cpu.memory.Read(address)
-
-	// cpu.updateZeroAndNegativeFlags(result)
 
 	return nil
 }
