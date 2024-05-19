@@ -6,14 +6,32 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_AND_Accumulator(t *testing.T) {
+func Test_ADC_SetCarryFlag(t *testing.T) {
 	cpu := NewCPU()
-	cpu.Load([]uint8{0x29, 0b1001_0110, 0x00})
+	cpu.Load([]uint8{0x69, 0b1111_1111, 0x00})
 	cpu.Reset()
-	cpu.registerA = 0b0000_1111
+	cpu.registerA = 0b0000_0001
 	cpu.Run()
 
-	assert.Equal(t, uint8(0b0000_0110), cpu.registerA)
+	assert.True(t, cpu.status.c())
+	assert.False(t, cpu.status.n())
+	assert.False(t, cpu.status.o())
+	assert.True(t, cpu.status.z())
+	assert.Equal(t, uint8(0b0000_0000), cpu.registerA)
+}
+
+func Test_ADC_SetOverflowFlag(t *testing.T) {
+	cpu := NewCPU()
+	cpu.Load([]uint8{0x69, 0b0111_1111, 0x00})
+	cpu.Reset()
+	cpu.registerA = 0b0000_0010
+	cpu.Run()
+
+	assert.False(t, cpu.status.c())
+	assert.True(t, cpu.status.n())
+	assert.True(t, cpu.status.o())
+	assert.False(t, cpu.status.z())
+	assert.Equal(t, uint8(0b1000_0001), cpu.registerA)
 }
 
 func Test_AND_SetZeroFlag(t *testing.T) {

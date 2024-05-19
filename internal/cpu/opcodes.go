@@ -21,6 +21,36 @@ const (
 	NoneAddressingMode
 )
 
+func (cpu *CPU) ADC(mode addressingMode) error {
+	address := cpu.getOperandAddress(mode)
+	value := cpu.memory.Read(address)
+
+	var carry uint8
+	if cpu.status.c() {
+		carry = 1
+	}
+
+	aSign := uint16(cpu.registerA) & 0b1000_0000
+	vSign := uint16(value) & 0b1000_0000
+	mayOverflow := aSign^vSign == 0b0000_0000
+
+	result := uint16(cpu.registerA) + uint16(value) + uint16(carry)
+
+	rSign := result & 0b1000_0000
+	isDiffSign := rSign != aSign
+	if mayOverflow && isDiffSign {
+		cpu.status.setO(true)
+	}
+	if result > 0xFF {
+		cpu.status.setC(true)
+	}
+
+	cpu.registerA = byte(result & 0xFF)
+	cpu.updateZeroAndNegativeFlags(cpu.registerA)
+
+	return nil
+}
+
 func (cpu *CPU) AND(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 	value := cpu.memory.Read(address)
@@ -559,6 +589,15 @@ func (cpu *CPU) JSR(mode addressingMode) error {
 
 func (cpu *CPU) RTS(mode addressingMode) error {
 	cpu.programCounter = cpu.popStackUint16() + 1
+
+	return nil
+}
+
+func (cpu *CPU) SBC(mode addressingMode) error {
+	// address := cpu.getOperandAddress(mode)
+	// value := cpu.memory.Read(address)
+
+	// cpu.updateZeroAndNegativeFlags(result)
 
 	return nil
 }

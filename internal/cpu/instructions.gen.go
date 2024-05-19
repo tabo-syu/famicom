@@ -16,8 +16,8 @@ func (i instruction) Call(cpu *CPU) error {
 	var err error
 
 	switch i.opcode {
-	// case "ADC":
-	// 	err = cpu.ADC(i.mode)
+	case "ADC":
+		err = cpu.ADC(i.mode)
 	case "AND":
 		err = cpu.AND(i.mode)
 	case "ASL":
