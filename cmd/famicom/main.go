@@ -53,9 +53,14 @@ func run() error {
 	cpu.Load(code)
 	cpu.Reset()
 
-	g := game.NewGame(&cpu, rand.New(rand.NewSource(time.Now().UnixNano())))
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+	cpu.Memory.Write(0xFE, uint8(rng.Intn(15)+1))
+
+	g := game.NewGame(&cpu, rng)
 	ebiten.SetWindowSize(game.ScreenSize, game.ScreenSize)
 	ebiten.SetWindowTitle("Snake Game")
+
+	go cpu.Run()
 	if err := ebiten.RunGame(g); err != nil {
 		return err
 	}

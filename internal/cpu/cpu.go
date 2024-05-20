@@ -2,6 +2,7 @@ package cpu
 
 import (
 	"log"
+	"time"
 
 	"github.com/tabo-syu/famicom/internal/memory"
 )
@@ -48,13 +49,7 @@ func (cpu *CPU) Reset() {
 }
 
 func (cpu *CPU) Run() {
-	cpu.RunWithCallback(func(cpu *CPU) {})
-}
-
-func (cpu *CPU) RunWithCallback(callback func(*CPU)) {
 	for {
-		callback(cpu)
-
 		code := cpu.Memory.Read(cpu.ProgramCounter)
 		cpu.ProgramCounter++
 
@@ -63,10 +58,12 @@ func (cpu *CPU) RunWithCallback(callback func(*CPU)) {
 
 			break
 		}
+
+		time.Sleep(10 * time.Microsecond)
 	}
 }
 
-func (cpu *CPU) loadAndRun(program []uint8) {
+func (cpu *CPU) LoadAndRun(program []uint8) {
 	cpu.Load(program)
 	cpu.Reset()
 	cpu.Run()

@@ -19,18 +19,6 @@ func NewBoard(cpu *cpu.CPU) *Board {
 }
 
 func (b *Board) Update() {
-	// for i := 0x0200; i < 0x0600; i++ {
-	// 	row := (i - 0x0200) / size
-	// 	col := (i - 0x0200) % size
-
-	// 	data := b.cpu.Memory.Read(uint16(i))
-	// 	b.info[row][col] = c(data)
-	// }
-}
-
-var dot = ebiten.NewImage(1, 1)
-
-func (b *Board) Draw(board *ebiten.Image) {
 	for i := 0x0200; i < 0x0600; i++ {
 		row := (i - 0x0200) / size
 		col := (i - 0x0200) % size
@@ -38,7 +26,11 @@ func (b *Board) Draw(board *ebiten.Image) {
 		data := b.cpu.Memory.Read(uint16(i))
 		b.info[row][col] = c(data)
 	}
+}
 
+var dot = ebiten.NewImage(1, 1)
+
+func (b *Board) Draw(board *ebiten.Image) {
 	for y := range size {
 		for x := range size {
 			dot.Fill(b.info[y][x])

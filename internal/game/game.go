@@ -43,13 +43,6 @@ func (g *game) Update() error {
 	}
 
 	g.cpu.Memory.Write(0xFE, uint8(g.rng.Intn(15)+1))
-
-	code := g.cpu.Memory.Read(g.cpu.ProgramCounter)
-	g.cpu.ProgramCounter++
-	if err := g.cpu.Instructions[code].Call(g.cpu); err != nil {
-		log.Println(err)
-	}
-
 	g.board.Update()
 
 	return nil
