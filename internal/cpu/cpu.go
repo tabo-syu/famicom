@@ -7,39 +7,39 @@ import (
 )
 
 type CPU struct {
-	programCounter uint16
+	ProgramCounter uint16
 	registerA      uint8
 	registerX      uint8
 	registerY      uint8
 	stackPointer   stackPointer
 	status         status
 
-	memory       memory.Memory
-	instructions map[uint8]instruction
+	Memory       memory.Memory
+	Instructions map[uint8]instruction
 }
 
 func NewCPU() CPU {
 	return CPU{
-		programCounter: 0,
+		ProgramCounter: 0,
 		registerA:      0,
 		registerX:      0,
 		registerY:      0,
 		stackPointer:   0,
 		status:         0,
 
-		memory:       memory.NewMemory(),
-		instructions: NewInstructions(),
+		Memory:       memory.NewMemory(),
+		Instructions: NewInstructions(),
 	}
 }
 
 func (cpu *CPU) Load(program []uint8) {
-	copy(cpu.memory[0x06_00:], program)
-	cpu.memory.WriteUint16(0xFF_FC, 0x06_00)
+	copy(cpu.Memory[0x06_00:], program)
+	cpu.Memory.WriteUint16(0xFF_FC, 0x06_00)
 }
 
 func (cpu *CPU) Reset() {
 	// 0x80_00
-	cpu.programCounter = cpu.memory.ReadUint16(0xFF_FC)
+	cpu.ProgramCounter = cpu.Memory.ReadUint16(0xFF_FC)
 	cpu.registerA = 0
 	cpu.registerX = 0
 	cpu.registerY = 0
@@ -55,10 +55,10 @@ func (cpu *CPU) RunWithCallback(callback func(*CPU)) {
 	for {
 		callback(cpu)
 
-		code := cpu.memory.Read(cpu.programCounter)
-		cpu.programCounter++
+		code := cpu.Memory.Read(cpu.ProgramCounter)
+		cpu.ProgramCounter++
 
-		if err := cpu.instructions[code].Call(cpu); err != nil {
+		if err := cpu.Instructions[code].Call(cpu); err != nil {
 			log.Println(err)
 
 			break

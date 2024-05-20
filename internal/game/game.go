@@ -1,27 +1,64 @@
 package game
 
 import (
-	"image/color"
+	"log"
+	"math/rand"
 
-	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/tabo-syu/famicom/internal/cpu"
 )
 
-type game struct{}
+const ScreenSize = 320
 
-func NewGame() *game {
-	return &game{}
+type game struct {
+	cpu   *cpu.CPU
+	rng   *rand.Rand
+	board *Board
 }
 
-func (g *game) Update(image *ebiten.Image) error {
+func NewGame(cpu *cpu.CPU, rng *rand.Rand) *game {
+	return &game{
+		cpu:   cpu,
+		rng:   rng,
+		board: NewBoard(cpu),
+	}
+}
+
+func (g *game) Update() error {
+	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
+		log.Fatal("Game exited by user")
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyW) {
+		g.cpu.Memory.Write(0xFF, 0x77)
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyS) {
+		g.cpu.Memory.Write(0xFF, 0x73)
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyA) {
+		g.cpu.Memory.Write(0xFF, 0x61)
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyD) {
+		g.cpu.Memory.Write(0xFF, 0x64)
+	}
+
+	g.cpu.Memory.Write(0xFE, uint8(g.rng.Intn(15)+1))
+
+	code := g.cpu.Memory.Read(g.cpu.ProgramCounter)
+	g.cpu.ProgramCounter++
+	if err := g.cpu.Instructions[code].Call(g.cpu); err != nil {
+		log.Println(err)
+	}
+
+	g.board.Update()
+
 	return nil
 }
 
 func (g *game) Draw(screen *ebiten.Image) {
-	screen.Fill(color.RGBA{0, 0, 0, 255})
-	ebitenutil.DebugPrint(screen, "Snake Game")
+	g.board.Draw(screen)
 }
 
 func (g *game) Layout(width, height int) (int, int) {
-	return width, height
+	return ScreenSize, ScreenSize
 }
