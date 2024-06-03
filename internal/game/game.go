@@ -42,7 +42,7 @@ func (g *game) Update() error {
 		g.cpu.Memory.Write(0xFF, 0x64)
 	}
 
-	g.cpu.Memory.Write(0xFE, uint8(g.rng.Intn(15)+1))
+	g.cpu.Memory.Write(0xFE, byte(g.rng.Intn(15)+1))
 	g.board.Update()
 
 	return nil

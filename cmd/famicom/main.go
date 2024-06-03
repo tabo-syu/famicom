@@ -54,7 +54,7 @@ func run() error {
 	cpu.Reset()
 
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
-	cpu.Memory.Write(0xFE, uint8(rng.Intn(15)+1))
+	cpu.Memory.Write(0xFE, byte(rng.Intn(15)+1))
 
 	g := game.NewGame(&cpu, rng)
 	ebiten.SetWindowSize(game.ScreenSize, game.ScreenSize)

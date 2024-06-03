@@ -13,7 +13,7 @@ package cpu
 
 https://www.nesdev.org/wiki/Status_flags
 */
-type status uint8
+type status byte
 
 func newStatus() status {
 	return 0b0000_0000

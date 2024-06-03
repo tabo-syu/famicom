@@ -146,8 +146,8 @@ func newInstruction(opcode string, bytes uint16, cycles uint16, mode addressingM
 	}
 }
 
-func NewInstructions() map[uint8]instruction {
-	return map[uint8]instruction{
+func NewInstructions() map[byte]instruction {
+	return map[byte]instruction{
 		// ADC
 		0x69: newInstruction("ADC", 2, 2, ImmediateMode),
 		0x65: newInstruction("ADC", 2, 3, ZeroPageMode),

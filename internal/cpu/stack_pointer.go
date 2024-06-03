@@ -1,6 +1,6 @@
 package cpu
 
-type stackPointer uint8
+type stackPointer byte
 
 func newStackPointer() stackPointer {
 	return 0xFF

@@ -25,7 +25,7 @@ func (cpu *CPU) ADC(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 	value := cpu.Memory.Read(address)
 
-	var carry uint8
+	var carry byte
 	if cpu.status.c() {
 		carry = 1
 	}
@@ -64,7 +64,7 @@ func (cpu *CPU) AND(mode addressingMode) error {
 
 func (cpu *CPU) ASL(mode addressingMode) error {
 	var (
-		value   uint8
+		value   byte
 		address uint16
 	)
 	if mode == AccumulatorMode {
@@ -122,10 +122,10 @@ func (cpu *CPU) BIT(mode addressingMode) error {
 
 	result := cpu.registerA & value
 
-	isOverflow := (result & uint8(0b0100_0000) >> 6) == 1
+	isOverflow := (result & byte(0b0100_0000) >> 6) == 1
 	cpu.status.setO(isOverflow)
 
-	isNegative := (result & uint8(0b1000_0000) >> 7) == 1
+	isNegative := (result & byte(0b1000_0000) >> 7) == 1
 	cpu.status.setN(isNegative)
 
 	cpu.updateZeroFlag(result)
@@ -375,7 +375,7 @@ func (cpu *CPU) LDY(mode addressingMode) error {
 
 func (cpu *CPU) LSR(mode addressingMode) error {
 	var (
-		value   uint8
+		value   byte
 		address uint16
 	)
 	if mode == AccumulatorMode {
@@ -421,7 +421,7 @@ func (cpu *CPU) PHA(mode addressingMode) error {
 }
 
 func (cpu *CPU) PHP(mode addressingMode) error {
-	cpu.pushStack(uint8(cpu.status))
+	cpu.pushStack(byte(cpu.status))
 
 	return nil
 }
@@ -441,7 +441,7 @@ func (cpu *CPU) PLP(mode addressingMode) error {
 
 func (cpu *CPU) ROL(mode addressingMode) error {
 	var (
-		value   uint8
+		value   byte
 		address uint16
 	)
 	if mode == AccumulatorMode {
@@ -456,7 +456,7 @@ func (cpu *CPU) ROL(mode addressingMode) error {
 		new0Bit = 1
 	}
 	cpu.status.setC(value&0b1000_0000 != 0)
-	value = value<<1 | uint8(new0Bit)
+	value = value<<1 | byte(new0Bit)
 
 	if mode == AccumulatorMode {
 		cpu.registerA = value
@@ -471,7 +471,7 @@ func (cpu *CPU) ROL(mode addressingMode) error {
 
 func (cpu *CPU) ROR(mode addressingMode) error {
 	var (
-		value   uint8
+		value   byte
 		address uint16
 	)
 	if mode == AccumulatorMode {
@@ -486,7 +486,7 @@ func (cpu *CPU) ROR(mode addressingMode) error {
 		new7Bit = 0b1000_0000
 	}
 	cpu.status.setC(value&0b0000_0001 != 0)
-	value = value>>1 | uint8(new7Bit)
+	value = value>>1 | byte(new7Bit)
 
 	if mode == AccumulatorMode {
 		cpu.registerA = value
@@ -517,7 +517,7 @@ func (cpu *CPU) SBC(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 	value := cpu.Memory.Read(address)
 
-	var carry uint8
+	var carry byte
 	if cpu.status.c() {
 		carry = 1
 	}
@@ -598,7 +598,7 @@ func (cpu *CPU) TAY(mode addressingMode) error {
 }
 
 func (cpu *CPU) TSX(mode addressingMode) error {
-	cpu.registerX = uint8(cpu.stackPointer)
+	cpu.registerX = byte(cpu.stackPointer)
 	cpu.updateZeroAndNegativeFlags(cpu.registerX)
 
 	return nil
@@ -697,12 +697,12 @@ func (cpu *CPU) getOperandAddress(mode addressingMode) uint16 {
 	}
 }
 
-func (cpu *CPU) pushStack(value uint8) {
+func (cpu *CPU) pushStack(value byte) {
 	cpu.Memory.Write(cpu.stackPointer.toAddress(), value)
 	cpu.stackPointer--
 }
 
-func (cpu *CPU) popStack() uint8 {
+func (cpu *CPU) popStack() byte {
 	cpu.stackPointer++
 	value := cpu.Memory.Read(cpu.stackPointer.toAddress())
 
@@ -710,8 +710,8 @@ func (cpu *CPU) popStack() uint8 {
 }
 
 func (cpu *CPU) pushStackUint16(value uint16) {
-	high := uint8(value >> 8)
-	low := uint8(value & 0x00_FF)
+	high := byte(value >> 8)
+	low := byte(value & 0x00_FF)
 
 	cpu.pushStack(high)
 	cpu.pushStack(low)
@@ -724,7 +724,7 @@ func (cpu *CPU) popStackUint16() uint16 {
 	return high<<8 | low
 }
 
-func (cpu *CPU) updateZeroFlag(value uint8) {
+func (cpu *CPU) updateZeroFlag(value byte) {
 	if value == 0 {
 		cpu.status.setZ(true)
 	} else {
@@ -732,7 +732,7 @@ func (cpu *CPU) updateZeroFlag(value uint8) {
 	}
 }
 
-func (cpu *CPU) updateNegativeFlag(value uint8) {
+func (cpu *CPU) updateNegativeFlag(value byte) {
 	if value&0b1000_0000 != 0 {
 		cpu.status.setN(true)
 	} else {
@@ -740,7 +740,7 @@ func (cpu *CPU) updateNegativeFlag(value uint8) {
 	}
 }
 
-func (cpu *CPU) updateZeroAndNegativeFlags(value uint8) {
+func (cpu *CPU) updateZeroAndNegativeFlags(value byte) {
 	cpu.updateZeroFlag(value)
 	cpu.updateNegativeFlag(value)
 }

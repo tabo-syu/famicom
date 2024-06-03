@@ -9,14 +9,14 @@ import (
 
 type CPU struct {
 	ProgramCounter uint16
-	registerA      uint8
-	registerX      uint8
-	registerY      uint8
+	registerA      byte
+	registerX      byte
+	registerY      byte
 	stackPointer   stackPointer
 	status         status
 
 	Memory       memory.Memory
-	Instructions map[uint8]instruction
+	Instructions map[byte]instruction
 }
 
 func NewCPU() CPU {
@@ -33,7 +33,7 @@ func NewCPU() CPU {
 	}
 }
 
-func (cpu *CPU) Load(program []uint8) {
+func (cpu *CPU) Load(program []byte) {
 	copy(cpu.Memory[0x06_00:], program)
 	cpu.Memory.WriteUint16(0xFF_FC, 0x06_00)
 }
@@ -63,7 +63,7 @@ func (cpu *CPU) Run() {
 	}
 }
 
-func (cpu *CPU) LoadAndRun(program []uint8) {
+func (cpu *CPU) LoadAndRun(program []byte) {
 	cpu.Load(program)
 	cpu.Reset()
 	cpu.Run()

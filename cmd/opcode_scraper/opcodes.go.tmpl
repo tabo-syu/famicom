@@ -36,8 +36,8 @@ func newInstruction(opcode string, bytes uint16, cycles uint16, mode addressingM
 	}
 }
 
-func NewInstructions() map[uint8]instruction {
-	return map[uint8]instruction{
+func NewInstructions() map[byte]instruction {
+	return map[byte]instruction{
 	{{ range $OpCode := . }}// {{ $OpCode.Name }}
 		{{ range .Modes}}0x{{ .Code }}: newInstruction("{{ $OpCode.Name }}", {{ .Bytes }}, {{ .Cycles }}, {{ .Name }}Mode),
 	{{ end }}{{ end }}
