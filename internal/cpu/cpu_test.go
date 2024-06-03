@@ -98,89 +98,89 @@ func Test_ASL_ShiftFromMemory(t *testing.T) {
 func Test_BCC_WhenSetCarry(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	// 0x8000, 0x8001, 0x8002, 0x8003
+	// 0x0300, 0x0301, 0x0302, 0x0303
 	cpu.loadForTest([]byte{0x90, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setC(true)
-	cpu.Bus.WriteMemory(0x80_10, 0xE8)
+	cpu.Bus.WriteMemory(0x03_10, 0xE8)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x00), cpu.registerX)
-	assert.Equal(t, uint16(0x80_03), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_03), cpu.ProgramCounter)
 }
 
 func Test_BCC_WhenUnsetCarry(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	// 0x8000, 0x8001, 0x8012, 0x8013
+	// 0x0300, 0x0301, 0x0312, 0x0313
 	cpu.loadForTest([]byte{0x90, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setC(false)
-	cpu.Bus.WriteMemory(0x80_12, 0xE8)
-	cpu.Bus.WriteMemory(0x80_13, 0x00)
+	cpu.Bus.WriteMemory(0x03_12, 0xE8)
+	cpu.Bus.WriteMemory(0x03_13, 0x00)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x80_14), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_14), cpu.ProgramCounter)
 }
 
 func Test_BCC_WhenMinusOperand(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	// 0x8000, 0x8001, 0x8012, 0x8013
+	// 0x0300, 0x0301, 0x0312, 0x0313
 	cpu.loadForTest([]byte{0x90, 0xF6, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setC(false)
-	cpu.Bus.WriteMemory(0x7F_F8, 0xE8)
-	cpu.Bus.WriteMemory(0x7F_F9, 0x00)
+	cpu.Bus.WriteMemory(0x02_F8, 0xE8)
+	cpu.Bus.WriteMemory(0x02_F9, 0x00)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x7F_FA), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x02_FA), cpu.ProgramCounter)
 }
 
 func Test_BCS_WhenSetCarry(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	// 0x8000, 0x8001, 0x8012, 0x8013
+	// 0x0300, 0x0301, 0x0312, 0x0313
 	cpu.loadForTest([]byte{0xB0, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setC(true)
-	cpu.Bus.WriteMemory(0x80_12, 0xE8)
-	cpu.Bus.WriteMemory(0x80_13, 0x00)
+	cpu.Bus.WriteMemory(0x03_12, 0xE8)
+	cpu.Bus.WriteMemory(0x03_13, 0x00)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x80_14), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_14), cpu.ProgramCounter)
 }
 
 func Test_BCS_WhenUnsetCarry(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	// 0x8000, 0x8001, 0x8002, 0x8003
+	// 0x0300, 0x0301, 0x0302, 0x0303
 	cpu.loadForTest([]byte{0xB0, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setC(false)
-	cpu.Bus.WriteMemory(0x80_10, 0xE8)
+	cpu.Bus.WriteMemory(0x03_10, 0xE8)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x00), cpu.registerX)
-	assert.Equal(t, uint16(0x80_03), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_03), cpu.ProgramCounter)
 }
 
 func Test_BCS_WhenMinusOperand(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	// 0x8000, 0x8001, 0x8012, 0x8013
+	// 0x0300, 0x0301, 0x0312, 0x0313
 	cpu.loadForTest([]byte{0xB0, 0xF6, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setC(true)
-	cpu.Bus.WriteMemory(0x7F_F8, 0xE8)
-	cpu.Bus.WriteMemory(0x7F_F9, 0x00)
+	cpu.Bus.WriteMemory(0x02_F8, 0xE8)
+	cpu.Bus.WriteMemory(0x02_F9, 0x00)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x7F_FA), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x02_FA), cpu.ProgramCounter)
 }
 
 func Test_BEQ_WhenSetZero(t *testing.T) {
@@ -189,12 +189,12 @@ func Test_BEQ_WhenSetZero(t *testing.T) {
 	cpu.loadForTest([]byte{0xF0, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setZ(true)
-	cpu.Bus.WriteMemory(0x80_12, 0xE8)
-	cpu.Bus.WriteMemory(0x80_13, 0x00)
+	cpu.Bus.WriteMemory(0x03_12, 0xE8)
+	cpu.Bus.WriteMemory(0x03_13, 0x00)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x80_14), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_14), cpu.ProgramCounter)
 }
 
 func Test_BEQ_WhenUnsetZero(t *testing.T) {
@@ -203,11 +203,11 @@ func Test_BEQ_WhenUnsetZero(t *testing.T) {
 	cpu.loadForTest([]byte{0xF0, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setZ(false)
-	cpu.Bus.WriteMemory(0x80_10, 0xE8)
+	cpu.Bus.WriteMemory(0x03_10, 0xE8)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x00), cpu.registerX)
-	assert.Equal(t, uint16(0x80_03), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_03), cpu.ProgramCounter)
 }
 
 func Test_BEQ_WhenMinusOperand(t *testing.T) {
@@ -216,12 +216,12 @@ func Test_BEQ_WhenMinusOperand(t *testing.T) {
 	cpu.loadForTest([]byte{0xF0, 0xF6, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setZ(true)
-	cpu.Bus.WriteMemory(0x7F_F8, 0xE8)
-	cpu.Bus.WriteMemory(0x7F_F9, 0x00)
+	cpu.Bus.WriteMemory(0x02_F8, 0xE8)
+	cpu.Bus.WriteMemory(0x02_F9, 0x00)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x7F_FA), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x02_FA), cpu.ProgramCounter)
 }
 
 func Test_BIT_SetNegativeFlag(t *testing.T) {
@@ -286,12 +286,12 @@ func Test_BMI_WhenSetNegative(t *testing.T) {
 	cpu.loadForTest([]byte{0x30, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setN(true)
-	cpu.Bus.WriteMemory(0x80_12, 0xE8)
-	cpu.Bus.WriteMemory(0x80_13, 0x00)
+	cpu.Bus.WriteMemory(0x03_12, 0xE8)
+	cpu.Bus.WriteMemory(0x03_13, 0x00)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x80_14), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_14), cpu.ProgramCounter)
 }
 
 func Test_BMI_WhenUnsetNegative(t *testing.T) {
@@ -300,11 +300,11 @@ func Test_BMI_WhenUnsetNegative(t *testing.T) {
 	cpu.loadForTest([]byte{0x30, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setN(false)
-	cpu.Bus.WriteMemory(0x80_10, 0xE8)
+	cpu.Bus.WriteMemory(0x03_10, 0xE8)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x00), cpu.registerX)
-	assert.Equal(t, uint16(0x80_03), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_03), cpu.ProgramCounter)
 }
 
 func Test_BMI_WhenMinusOperand(t *testing.T) {
@@ -313,12 +313,12 @@ func Test_BMI_WhenMinusOperand(t *testing.T) {
 	cpu.loadForTest([]byte{0x30, 0xF6, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setN(true)
-	cpu.Bus.WriteMemory(0x7F_F8, 0xE8)
-	cpu.Bus.WriteMemory(0x7F_F9, 0x00)
+	cpu.Bus.WriteMemory(0x02_F8, 0xE8)
+	cpu.Bus.WriteMemory(0x02_F9, 0x00)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x7F_FA), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x02_FA), cpu.ProgramCounter)
 }
 
 func Test_BNE_WhenSetZero(t *testing.T) {
@@ -327,11 +327,11 @@ func Test_BNE_WhenSetZero(t *testing.T) {
 	cpu.loadForTest([]byte{0xD0, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setZ(true)
-	cpu.Bus.WriteMemory(0x80_10, 0xE8)
+	cpu.Bus.WriteMemory(0x03_10, 0xE8)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x00), cpu.registerX)
-	assert.Equal(t, uint16(0x80_03), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_03), cpu.ProgramCounter)
 }
 
 func Test_BNE_WhenUnsetZero(t *testing.T) {
@@ -340,12 +340,12 @@ func Test_BNE_WhenUnsetZero(t *testing.T) {
 	cpu.loadForTest([]byte{0xD0, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setZ(false)
-	cpu.Bus.WriteMemory(0x80_12, 0xE8)
-	cpu.Bus.WriteMemory(0x80_13, 0x00)
+	cpu.Bus.WriteMemory(0x03_12, 0xE8)
+	cpu.Bus.WriteMemory(0x03_13, 0x00)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x80_14), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_14), cpu.ProgramCounter)
 }
 
 func Test_BNE_WhenMinusOperand(t *testing.T) {
@@ -354,12 +354,12 @@ func Test_BNE_WhenMinusOperand(t *testing.T) {
 	cpu.loadForTest([]byte{0xD0, 0xF6, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setZ(false)
-	cpu.Bus.WriteMemory(0x7F_F8, 0xE8)
-	cpu.Bus.WriteMemory(0x7F_F9, 0x00)
+	cpu.Bus.WriteMemory(0x02_F8, 0xE8)
+	cpu.Bus.WriteMemory(0x02_F9, 0x00)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x7F_FA), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x02_FA), cpu.ProgramCounter)
 }
 
 func Test_BPL_WhenSetNegative(t *testing.T) {
@@ -368,11 +368,11 @@ func Test_BPL_WhenSetNegative(t *testing.T) {
 	cpu.loadForTest([]byte{0x10, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setN(true)
-	cpu.Bus.WriteMemory(0x80_10, 0xE8)
+	cpu.Bus.WriteMemory(0x03_10, 0xE8)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x00), cpu.registerX)
-	assert.Equal(t, uint16(0x80_03), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_03), cpu.ProgramCounter)
 }
 
 func Test_BPL_WhenUnsetNegative(t *testing.T) {
@@ -381,12 +381,12 @@ func Test_BPL_WhenUnsetNegative(t *testing.T) {
 	cpu.loadForTest([]byte{0x10, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setN(false)
-	cpu.Bus.WriteMemory(0x80_12, 0xE8)
-	cpu.Bus.WriteMemory(0x80_13, 0x00)
+	cpu.Bus.WriteMemory(0x03_12, 0xE8)
+	cpu.Bus.WriteMemory(0x03_13, 0x00)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x80_14), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_14), cpu.ProgramCounter)
 }
 
 func Test_BPL_WhenMinusOperand(t *testing.T) {
@@ -395,12 +395,12 @@ func Test_BPL_WhenMinusOperand(t *testing.T) {
 	cpu.loadForTest([]byte{0x10, 0xF6, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setN(false)
-	cpu.Bus.WriteMemory(0x7F_F8, 0xE8)
-	cpu.Bus.WriteMemory(0x7F_F9, 0x00)
+	cpu.Bus.WriteMemory(0x02_F8, 0xE8)
+	cpu.Bus.WriteMemory(0x02_F9, 0x00)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x7F_FA), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x02_FA), cpu.ProgramCounter)
 }
 
 func Test_BVC_WhenSetOverflow(t *testing.T) {
@@ -409,11 +409,11 @@ func Test_BVC_WhenSetOverflow(t *testing.T) {
 	cpu.loadForTest([]byte{0x50, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setO(true)
-	cpu.Bus.WriteMemory(0x80_10, 0xE8)
+	cpu.Bus.WriteMemory(0x03_10, 0xE8)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x00), cpu.registerX)
-	assert.Equal(t, uint16(0x80_03), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_03), cpu.ProgramCounter)
 }
 
 func Test_BVC_WhenUnsetOverflow(t *testing.T) {
@@ -422,12 +422,12 @@ func Test_BVC_WhenUnsetOverflow(t *testing.T) {
 	cpu.loadForTest([]byte{0x50, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setO(false)
-	cpu.Bus.WriteMemory(0x80_12, 0xE8)
-	cpu.Bus.WriteMemory(0x80_13, 0x00)
+	cpu.Bus.WriteMemory(0x03_12, 0xE8)
+	cpu.Bus.WriteMemory(0x03_13, 0x00)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x80_14), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_14), cpu.ProgramCounter)
 }
 
 func Test_BVC_WhenMinusOperand(t *testing.T) {
@@ -436,12 +436,12 @@ func Test_BVC_WhenMinusOperand(t *testing.T) {
 	cpu.loadForTest([]byte{0x50, 0xF6, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setO(false)
-	cpu.Bus.WriteMemory(0x7F_F8, 0xE8)
-	cpu.Bus.WriteMemory(0x7F_F9, 0x00)
+	cpu.Bus.WriteMemory(0x02_F8, 0xE8)
+	cpu.Bus.WriteMemory(0x02_F9, 0x00)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x7F_FA), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x02_FA), cpu.ProgramCounter)
 }
 
 func Test_BVS_WhenSetOverflow(t *testing.T) {
@@ -450,12 +450,12 @@ func Test_BVS_WhenSetOverflow(t *testing.T) {
 	cpu.loadForTest([]byte{0x70, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setO(true)
-	cpu.Bus.WriteMemory(0x80_12, 0xE8)
-	cpu.Bus.WriteMemory(0x80_13, 0x00)
+	cpu.Bus.WriteMemory(0x03_12, 0xE8)
+	cpu.Bus.WriteMemory(0x03_13, 0x00)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x80_14), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_14), cpu.ProgramCounter)
 }
 
 func Test_BVS_WhenUnsetOverflow(t *testing.T) {
@@ -464,11 +464,11 @@ func Test_BVS_WhenUnsetOverflow(t *testing.T) {
 	cpu.loadForTest([]byte{0x70, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setO(false)
-	cpu.Bus.WriteMemory(0x80_10, 0xE8)
+	cpu.Bus.WriteMemory(0x03_10, 0xE8)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x00), cpu.registerX)
-	assert.Equal(t, uint16(0x80_03), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_03), cpu.ProgramCounter)
 }
 
 func Test_BVS_WhenMinusOperand(t *testing.T) {
@@ -477,12 +477,12 @@ func Test_BVS_WhenMinusOperand(t *testing.T) {
 	cpu.loadForTest([]byte{0x70, 0xF6, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setO(true)
-	cpu.Bus.WriteMemory(0x7F_F8, 0xE8)
-	cpu.Bus.WriteMemory(0x7F_F9, 0x00)
+	cpu.Bus.WriteMemory(0x02_F8, 0xE8)
+	cpu.Bus.WriteMemory(0x02_F9, 0x00)
 	cpu.Run()
 
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x7F_FA), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x02_FA), cpu.ProgramCounter)
 }
 
 func Test_LDA_SetZeroFlag(t *testing.T) {
@@ -787,7 +787,7 @@ func Test_NOP_NoOperation(t *testing.T) {
 	cpu.Reset(0x00_00)
 	cpu.Run()
 
-	assert.Equal(t, uint16(0x80_03), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_03), cpu.ProgramCounter)
 	assert.Equal(t, byte(0x01), cpu.registerX)
 }
 
@@ -925,16 +925,16 @@ func Test_ROL_Unset0Bit(t *testing.T) {
 func Test_ROL_RotateFromMemory(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	cpu.loadForTest([]byte{0x2E, 0x30, 0x40, 0x00})
+	cpu.loadForTest([]byte{0x2E, 0x30, 0x04, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.status.setC(true)
-	cpu.Bus.WriteMemory(0x40_30, 0b1001_0101)
+	cpu.Bus.WriteMemory(0x04_30, 0b1001_0101)
 	cpu.Run()
 
 	assert.True(t, cpu.status.c())
 	assert.False(t, cpu.status.z())
 	assert.False(t, cpu.status.n())
-	assert.Equal(t, byte(0b0010_1011), cpu.Bus.ReadMemory(0x40_30))
+	assert.Equal(t, byte(0b0010_1011), cpu.Bus.ReadMemory(0x04_30))
 }
 
 func Test_ROR_Set7Bit(t *testing.T) {
@@ -1093,14 +1093,14 @@ func Test_SBC_SetCarryAndOverflowFlags(t *testing.T) {
 func Test_JSRandRTS(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	cpu.loadForTest([]byte{0x20, 0x30, 0x40, 0x00})
+	cpu.loadForTest([]byte{0x20, 0x30, 0x04, 0x00})
 	cpu.Reset(0x00_00)
-	cpu.Bus.WriteMemory(0x40_30, 0xE8)
-	cpu.Bus.WriteMemory(0x40_31, 0x60)
-	cpu.Bus.WriteMemory(0x40_32, 0x00)
+	cpu.Bus.WriteMemory(0x04_30, 0xE8)
+	cpu.Bus.WriteMemory(0x04_31, 0x60)
+	cpu.Bus.WriteMemory(0x04_32, 0x00)
 	cpu.Run()
 
-	assert.Equal(t, uint16(0x80_04), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x03_04), cpu.ProgramCounter)
 	assert.Equal(t, byte(0x01), cpu.registerX)
 	assert.Equal(t, byte(0xFF), byte(cpu.stackPointer))
 }
@@ -1294,12 +1294,12 @@ func Test_CPY_SetCarryOnly(t *testing.T) {
 func Test_DEC_SetZeroFlag(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	cpu.loadForTest([]byte{0xC6, 0x02, 0x00})
+	cpu.loadForTest([]byte{0xC6, 0x10, 0x00})
 	cpu.Reset(0x00_00)
-	cpu.Bus.WriteMemory(0x02, 0x01)
+	cpu.Bus.WriteMemory(0x10, 0x01)
 	cpu.Run()
 
-	assert.Equal(t, byte(0x00), cpu.Bus.ReadMemory(0x01))
+	assert.Equal(t, byte(0x00), cpu.Bus.ReadMemory(0x10))
 	assert.True(t, cpu.status.z())
 }
 
@@ -1318,12 +1318,12 @@ func Test_DEC_SetNegativeFlag(t *testing.T) {
 func Test_DEC_Decrement(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	cpu.loadForTest([]byte{0xC6, 0x02, 0x00})
+	cpu.loadForTest([]byte{0xC6, 0x10, 0x00})
 	cpu.Reset(0x00_00)
-	cpu.Bus.WriteMemory(0x02, 0x03)
+	cpu.Bus.WriteMemory(0x10, 0x03)
 	cpu.Run()
 
-	assert.Equal(t, byte(0x02), cpu.Bus.ReadMemory(0x02))
+	assert.Equal(t, byte(0x02), cpu.Bus.ReadMemory(0x10))
 }
 
 func Test_DEC_Underflow(t *testing.T) {
@@ -1419,47 +1419,47 @@ func Test_DEY_UnderflowY(t *testing.T) {
 func Test_INC_SetZeroFlag(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	cpu.loadForTest([]byte{0xE6, 0x01, 0x00})
+	cpu.loadForTest([]byte{0xE6, 0x10, 0x00})
 	cpu.Reset(0x00_00)
-	cpu.Bus.WriteMemory(0x01, 0xFF)
+	cpu.Bus.WriteMemory(0x10, 0xFF)
 	cpu.Run()
 
-	assert.Equal(t, byte(0x00), cpu.Bus.ReadMemory(0x01))
+	assert.Equal(t, byte(0x00), cpu.Bus.ReadMemory(0x10))
 	assert.True(t, cpu.status.z())
 }
 
 func Test_INC_SetNegativeFlag(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	cpu.loadForTest([]byte{0xE6, 0x01, 0x00})
+	cpu.loadForTest([]byte{0xE6, 0x10, 0x00})
 	cpu.Reset(0x00_00)
-	cpu.Bus.WriteMemory(0x01, 0b0111_1111)
+	cpu.Bus.WriteMemory(0x10, 0b0111_1111)
 	cpu.Run()
 
-	assert.Equal(t, byte(0x80), cpu.Bus.ReadMemory(0x01))
+	assert.Equal(t, byte(0x80), cpu.Bus.ReadMemory(0x10))
 	assert.True(t, cpu.status.n())
 }
 
 func Test_INC_Increment(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	cpu.loadForTest([]byte{0xE6, 0x01, 0x00})
+	cpu.loadForTest([]byte{0xE6, 0x10, 0x00})
 	cpu.Reset(0x00_00)
-	cpu.Bus.WriteMemory(0x01, 0x02)
+	cpu.Bus.WriteMemory(0x10, 0x02)
 	cpu.Run()
 
-	assert.Equal(t, byte(0x03), cpu.Bus.ReadMemory(0x01))
+	assert.Equal(t, byte(0x03), cpu.Bus.ReadMemory(0x10))
 }
 
 func Test_INC_Overflow(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	cpu.loadForTest([]byte{0xE6, 0x01, 0xE6, 0x01, 0x00})
+	cpu.loadForTest([]byte{0xE6, 0x10, 0xE6, 0x10, 0x00})
 	cpu.Reset(0x00_00)
-	cpu.Bus.WriteMemory(0x01, 0xFF)
+	cpu.Bus.WriteMemory(0x10, 0xFF)
 	cpu.Run()
 
-	assert.Equal(t, byte(0x01), cpu.Bus.ReadMemory(0x01))
+	assert.Equal(t, byte(0x01), cpu.Bus.ReadMemory(0x10))
 }
 
 func Test_INX_Increment(t *testing.T) {
@@ -1509,43 +1509,43 @@ func Test_INY_OverflowY(t *testing.T) {
 func Test_JMP_Absolute(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	cpu.loadForTest([]byte{0x4C, 0x30, 0x40, 0x00})
+	cpu.loadForTest([]byte{0x4C, 0x30, 0x04, 0x00})
 	cpu.Reset(0x00_00)
-	cpu.Bus.WriteMemory(0x40_30, 0xE8)
-	cpu.Bus.WriteMemory(0x40_31, 0x00)
+	cpu.Bus.WriteMemory(0x04_30, 0xE8)
+	cpu.Bus.WriteMemory(0x04_31, 0x00)
 	cpu.Run()
 
-	assert.Equal(t, uint16(0x40_32), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x04_32), cpu.ProgramCounter)
 	assert.Equal(t, byte(0x01), cpu.registerX)
 }
 
 func Test_JMP_Indirect(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	cpu.loadForTest([]byte{0x6C, 0x30, 0x40, 0x00})
+	cpu.loadForTest([]byte{0x6C, 0x30, 0x04, 0x00})
 	cpu.Reset(0x00_00)
-	cpu.Bus.WriteMemory(0x40_30, 0x44)
-	cpu.Bus.WriteMemory(0x40_31, 0x55)
-	cpu.Bus.WriteMemory(0x55_44, 0xE8)
-	cpu.Bus.WriteMemory(0x55_45, 0x00)
+	cpu.Bus.WriteMemory(0x04_30, 0x44)
+	cpu.Bus.WriteMemory(0x04_31, 0x05)
+	cpu.Bus.WriteMemory(0x05_44, 0xE8)
+	cpu.Bus.WriteMemory(0x05_45, 0x00)
 	cpu.Run()
 
-	assert.Equal(t, uint16(0x55_46), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x05_46), cpu.ProgramCounter)
 	assert.Equal(t, byte(0x01), cpu.registerX)
 }
 
 func Test_JSR_PushStack(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	cpu.loadForTest([]byte{0x20, 0x30, 0x40, 0x00})
+	cpu.loadForTest([]byte{0x20, 0x30, 0x04, 0x00})
 	cpu.Reset(0x00_00)
-	cpu.Bus.WriteMemory(0x40_30, 0xE8)
-	cpu.Bus.WriteMemory(0x40_31, 0x00)
+	cpu.Bus.WriteMemory(0x04_30, 0xE8)
+	cpu.Bus.WriteMemory(0x04_31, 0x00)
 	cpu.Run()
 
-	assert.Equal(t, uint16(0x40_32), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x04_32), cpu.ProgramCounter)
 	assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, byte(0x80), cpu.Bus.ReadMemory(0x01_FF))
+	assert.Equal(t, byte(0x03), cpu.Bus.ReadMemory(0x01_FF))
 	assert.Equal(t, byte(0x02), cpu.Bus.ReadMemory(0x01_FE))
 }
 
@@ -1593,23 +1593,23 @@ func Test_SEI_SetInterruptDisable(t *testing.T) {
 func Test_STX_Immediate(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	cpu.loadForTest([]byte{0x86, 0x01, 0x00})
+	cpu.loadForTest([]byte{0x86, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.registerX = 0x05
 	cpu.Run()
 
-	assert.Equal(t, byte(0x05), cpu.Bus.ReadMemory(0x01))
+	assert.Equal(t, byte(0x05), cpu.Bus.ReadMemory(0x10))
 }
 
 func Test_STY_Immediate(t *testing.T) {
 	memory := memory.NewMemory()
 	cpu := NewCPU(bus.NewBus(&memory))
-	cpu.loadForTest([]byte{0x84, 0x01, 0x00})
+	cpu.loadForTest([]byte{0x84, 0x10, 0x00})
 	cpu.Reset(0x00_00)
 	cpu.registerY = 0x05
 	cpu.Run()
 
-	assert.Equal(t, byte(0x05), cpu.Bus.ReadMemory(0x01))
+	assert.Equal(t, byte(0x05), cpu.Bus.ReadMemory(0x10))
 }
 
 func Test_5OpsWorkingTogether(t *testing.T) {
