@@ -5,8 +5,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/tabo-syu/famicom/internal/bus"
 	"github.com/tabo-syu/famicom/internal/cpu"
 	"github.com/tabo-syu/famicom/internal/game"
+	"github.com/tabo-syu/famicom/internal/memory"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -49,12 +51,14 @@ var code = []byte{
 }
 
 func run() error {
-	cpu := cpu.NewCPU()
+	memory := memory.NewMemory()
+
+	cpu := cpu.NewCPU(bus.NewBus(&memory))
 	cpu.Load(code)
-	cpu.Reset()
+	cpu.Reset(0xFF_FC)
 
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
-	cpu.Memory.Write(0xFE, byte(rng.Intn(15)+1))
+	cpu.Bus.WriteMemory(0xFE, byte(rng.Intn(15)+1))
 
 	g := game.NewGame(&cpu, rng)
 	ebiten.SetWindowSize(game.ScreenSize, game.ScreenSize)

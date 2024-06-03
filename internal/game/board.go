@@ -23,7 +23,7 @@ func (b *Board) Update() {
 		row := (i - 0x0200) / size
 		col := (i - 0x0200) % size
 
-		data := b.cpu.Memory.Read(uint16(i))
+		data := b.cpu.Bus.ReadMemory(uint16(i))
 		b.info[row][col] = c(data)
 	}
 }

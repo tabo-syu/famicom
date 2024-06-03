@@ -30,19 +30,19 @@ func (g *game) Update() error {
 		log.Fatal("Game exited by user")
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyW) {
-		g.cpu.Memory.Write(0xFF, 0x77)
+		g.cpu.Bus.WriteMemory(0xFF, 0x77)
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyS) {
-		g.cpu.Memory.Write(0xFF, 0x73)
+		g.cpu.Bus.WriteMemory(0xFF, 0x73)
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyA) {
-		g.cpu.Memory.Write(0xFF, 0x61)
+		g.cpu.Bus.WriteMemory(0xFF, 0x61)
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyD) {
-		g.cpu.Memory.Write(0xFF, 0x64)
+		g.cpu.Bus.WriteMemory(0xFF, 0x64)
 	}
 
-	g.cpu.Memory.Write(0xFE, byte(g.rng.Intn(15)+1))
+	g.cpu.Bus.WriteMemory(0xFE, byte(g.rng.Intn(15)+1))
 	g.board.Update()
 
 	return nil

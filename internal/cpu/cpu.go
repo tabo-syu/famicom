@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/tabo-syu/famicom/internal/memory"
+	"github.com/tabo-syu/famicom/internal/bus"
 )
 
 type CPU struct {
@@ -15,11 +15,11 @@ type CPU struct {
 	stackPointer   stackPointer
 	status         status
 
-	Memory       memory.Memory
+	Bus          bus.Bus
 	Instructions map[byte]instruction
 }
 
-func NewCPU() CPU {
+func NewCPU(bus bus.Bus) CPU {
 	return CPU{
 		ProgramCounter: 0,
 		registerA:      0,
@@ -28,19 +28,19 @@ func NewCPU() CPU {
 		stackPointer:   0,
 		status:         0,
 
-		Memory:       memory.NewMemory(),
+		Bus:          bus,
 		Instructions: NewInstructions(),
 	}
 }
 
 func (cpu *CPU) Load(program []byte) {
-	copy(cpu.Memory[0x06_00:], program)
-	cpu.Memory.WriteUint16(0xFF_FC, 0x06_00)
+	cpu.Bus.CopyToMemory(0x06_00, program)
+	cpu.Bus.WriteMemoryUint16(0xFF_FC, 0x06_00)
 }
 
-func (cpu *CPU) Reset() {
+func (cpu *CPU) Reset(position uint16) {
 	// 0x80_00
-	cpu.ProgramCounter = cpu.Memory.ReadUint16(0xFF_FC)
+	cpu.ProgramCounter = cpu.Bus.ReadMemoryUint16(position)
 	cpu.registerA = 0
 	cpu.registerX = 0
 	cpu.registerY = 0
@@ -50,7 +50,7 @@ func (cpu *CPU) Reset() {
 
 func (cpu *CPU) Run() {
 	for {
-		code := cpu.Memory.Read(cpu.ProgramCounter)
+		code := cpu.Bus.ReadMemory(cpu.ProgramCounter)
 		cpu.ProgramCounter++
 
 		if err := cpu.Instructions[code].Call(cpu); err != nil {
@@ -65,6 +65,6 @@ func (cpu *CPU) Run() {
 
 func (cpu *CPU) LoadAndRun(program []byte) {
 	cpu.Load(program)
-	cpu.Reset()
+	cpu.Reset(0xFF_FC)
 	cpu.Run()
 }

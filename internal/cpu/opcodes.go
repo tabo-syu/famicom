@@ -23,7 +23,7 @@ const (
 
 func (cpu *CPU) ADC(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
-	value := cpu.Memory.Read(address)
+	value := cpu.Bus.ReadMemory(address)
 
 	var carry byte
 	if cpu.status.c() {
@@ -53,7 +53,7 @@ func (cpu *CPU) ADC(mode addressingMode) error {
 
 func (cpu *CPU) AND(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
-	value := cpu.Memory.Read(address)
+	value := cpu.Bus.ReadMemory(address)
 
 	result := cpu.registerA & value
 	cpu.registerA = result
@@ -71,7 +71,7 @@ func (cpu *CPU) ASL(mode addressingMode) error {
 		value = cpu.registerA
 	} else {
 		address = cpu.getOperandAddress(mode)
-		value = cpu.Memory.Read(address)
+		value = cpu.Bus.ReadMemory(address)
 	}
 
 	cpu.status.setC(value&0b1000_0000 != 0)
@@ -80,7 +80,7 @@ func (cpu *CPU) ASL(mode addressingMode) error {
 	if mode == AccumulatorMode {
 		cpu.registerA = value
 	} else {
-		cpu.Memory.Write(address, value)
+		cpu.Bus.WriteMemory(address, value)
 	}
 
 	cpu.updateZeroFlag(cpu.registerA)
@@ -118,7 +118,7 @@ func (cpu *CPU) BEQ(mode addressingMode) error {
 
 func (cpu *CPU) BIT(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
-	value := cpu.Memory.Read(address)
+	value := cpu.Bus.ReadMemory(address)
 
 	result := cpu.registerA & value
 
@@ -209,7 +209,7 @@ func (cpu *CPU) CLV(mode addressingMode) error {
 func (cpu *CPU) CMP(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 
-	value := cpu.Memory.Read(address)
+	value := cpu.Bus.ReadMemory(address)
 	if cpu.registerA == value {
 		cpu.status.setZ(true)
 	}
@@ -228,7 +228,7 @@ func (cpu *CPU) CMP(mode addressingMode) error {
 func (cpu *CPU) CPX(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 
-	value := cpu.Memory.Read(address)
+	value := cpu.Bus.ReadMemory(address)
 	if cpu.registerX == value {
 		cpu.status.setZ(true)
 	}
@@ -247,7 +247,7 @@ func (cpu *CPU) CPX(mode addressingMode) error {
 func (cpu *CPU) CPY(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 
-	value := cpu.Memory.Read(address)
+	value := cpu.Bus.ReadMemory(address)
 	if cpu.registerY == value {
 		cpu.status.setZ(true)
 	}
@@ -266,9 +266,9 @@ func (cpu *CPU) CPY(mode addressingMode) error {
 func (cpu *CPU) DEC(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 
-	value := cpu.Memory.Read(address)
+	value := cpu.Bus.ReadMemory(address)
 	value--
-	cpu.Memory.Write(address, value)
+	cpu.Bus.WriteMemory(address, value)
 
 	cpu.updateZeroAndNegativeFlags(value)
 
@@ -291,7 +291,7 @@ func (cpu *CPU) DEY(mode addressingMode) error {
 
 func (cpu *CPU) EOR(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
-	value := cpu.Memory.Read(address)
+	value := cpu.Bus.ReadMemory(address)
 
 	result := cpu.registerA ^ value
 	cpu.registerA = result
@@ -303,9 +303,9 @@ func (cpu *CPU) EOR(mode addressingMode) error {
 func (cpu *CPU) INC(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 
-	value := cpu.Memory.Read(address)
+	value := cpu.Bus.ReadMemory(address)
 	value++
-	cpu.Memory.Write(address, value)
+	cpu.Bus.WriteMemory(address, value)
 
 	cpu.updateZeroAndNegativeFlags(value)
 
@@ -345,7 +345,7 @@ func (cpu *CPU) JSR(mode addressingMode) error {
 
 func (cpu *CPU) LDA(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
-	value := cpu.Memory.Read(address)
+	value := cpu.Bus.ReadMemory(address)
 
 	cpu.registerA = value
 	cpu.updateZeroAndNegativeFlags(cpu.registerA)
@@ -355,7 +355,7 @@ func (cpu *CPU) LDA(mode addressingMode) error {
 
 func (cpu *CPU) LDX(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
-	value := cpu.Memory.Read(address)
+	value := cpu.Bus.ReadMemory(address)
 
 	cpu.registerX = value
 	cpu.updateZeroAndNegativeFlags(cpu.registerX)
@@ -365,7 +365,7 @@ func (cpu *CPU) LDX(mode addressingMode) error {
 
 func (cpu *CPU) LDY(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
-	value := cpu.Memory.Read(address)
+	value := cpu.Bus.ReadMemory(address)
 
 	cpu.registerY = value
 	cpu.updateZeroAndNegativeFlags(cpu.registerY)
@@ -382,7 +382,7 @@ func (cpu *CPU) LSR(mode addressingMode) error {
 		value = cpu.registerA
 	} else {
 		address = cpu.getOperandAddress(mode)
-		value = cpu.Memory.Read(address)
+		value = cpu.Bus.ReadMemory(address)
 	}
 
 	cpu.status.setC(value&0b0000_0001 != 0)
@@ -391,7 +391,7 @@ func (cpu *CPU) LSR(mode addressingMode) error {
 	if mode == AccumulatorMode {
 		cpu.registerA = value
 	} else {
-		cpu.Memory.Write(address, value)
+		cpu.Bus.WriteMemory(address, value)
 	}
 
 	cpu.updateZeroAndNegativeFlags(value)
@@ -405,7 +405,7 @@ func (cpu *CPU) NOP(mode addressingMode) error {
 
 func (cpu *CPU) ORA(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
-	value := cpu.Memory.Read(address)
+	value := cpu.Bus.ReadMemory(address)
 
 	result := cpu.registerA | value
 	cpu.registerA = result
@@ -448,7 +448,7 @@ func (cpu *CPU) ROL(mode addressingMode) error {
 		value = cpu.registerA
 	} else {
 		address = cpu.getOperandAddress(mode)
-		value = cpu.Memory.Read(address)
+		value = cpu.Bus.ReadMemory(address)
 	}
 
 	var new0Bit = 0
@@ -461,7 +461,7 @@ func (cpu *CPU) ROL(mode addressingMode) error {
 	if mode == AccumulatorMode {
 		cpu.registerA = value
 	} else {
-		cpu.Memory.Write(address, value)
+		cpu.Bus.WriteMemory(address, value)
 	}
 
 	cpu.updateZeroAndNegativeFlags(value)
@@ -478,7 +478,7 @@ func (cpu *CPU) ROR(mode addressingMode) error {
 		value = cpu.registerA
 	} else {
 		address = cpu.getOperandAddress(mode)
-		value = cpu.Memory.Read(address)
+		value = cpu.Bus.ReadMemory(address)
 	}
 
 	var new7Bit = 0b0000_0000
@@ -491,7 +491,7 @@ func (cpu *CPU) ROR(mode addressingMode) error {
 	if mode == AccumulatorMode {
 		cpu.registerA = value
 	} else {
-		cpu.Memory.Write(address, value)
+		cpu.Bus.WriteMemory(address, value)
 	}
 
 	cpu.updateZeroFlag(cpu.registerA)
@@ -515,7 +515,7 @@ func (cpu *CPU) RTS(mode addressingMode) error {
 
 func (cpu *CPU) SBC(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
-	value := cpu.Memory.Read(address)
+	value := cpu.Bus.ReadMemory(address)
 
 	var carry byte
 	if cpu.status.c() {
@@ -564,21 +564,21 @@ func (cpu *CPU) SEI(mode addressingMode) error {
 
 func (cpu *CPU) STA(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
-	cpu.Memory.Write(address, cpu.registerA)
+	cpu.Bus.WriteMemory(address, cpu.registerA)
 
 	return nil
 }
 
 func (cpu *CPU) STX(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
-	cpu.Memory.Write(address, cpu.registerX)
+	cpu.Bus.WriteMemory(address, cpu.registerX)
 
 	return nil
 }
 
 func (cpu *CPU) STY(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
-	cpu.Memory.Write(address, cpu.registerY)
+	cpu.Bus.WriteMemory(address, cpu.registerY)
 
 	return nil
 }
@@ -630,60 +630,60 @@ func (cpu *CPU) getOperandAddress(mode addressingMode) uint16 {
 		return cpu.ProgramCounter
 
 	case ZeroPageMode:
-		return uint16(cpu.Memory.Read(cpu.ProgramCounter))
+		return uint16(cpu.Bus.ReadMemory(cpu.ProgramCounter))
 
 	case ZeroPageXMode:
-		position := cpu.Memory.Read(cpu.ProgramCounter)
+		position := cpu.Bus.ReadMemory(cpu.ProgramCounter)
 		address := uint16(position + cpu.registerX)
 
 		return address
 
 	case ZeroPageYMode:
-		position := cpu.Memory.Read(cpu.ProgramCounter)
+		position := cpu.Bus.ReadMemory(cpu.ProgramCounter)
 		address := uint16(position + cpu.registerY)
 
 		return address
 
 	case RelativeMode:
-		operand := int8(cpu.Memory.Read(cpu.ProgramCounter))
+		operand := int8(cpu.Bus.ReadMemory(cpu.ProgramCounter))
 		address := uint16(int32(cpu.ProgramCounter) + int32(operand))
 
 		return address
 
 	case AbsoluteMode:
-		return cpu.Memory.ReadUint16(cpu.ProgramCounter)
+		return cpu.Bus.ReadMemoryUint16(cpu.ProgramCounter)
 
 	case AbsoluteXMode:
-		base := cpu.Memory.ReadUint16(cpu.ProgramCounter)
+		base := cpu.Bus.ReadMemoryUint16(cpu.ProgramCounter)
 		address := base + uint16(cpu.registerX)
 
 		return address
 
 	case AbsoluteYMode:
-		base := cpu.Memory.ReadUint16(cpu.ProgramCounter)
+		base := cpu.Bus.ReadMemoryUint16(cpu.ProgramCounter)
 		address := base + uint16(cpu.registerY)
 
 		return address
 
 	case IndirectMode:
-		base := cpu.Memory.ReadUint16(cpu.ProgramCounter)
-		address := cpu.Memory.ReadUint16(base)
+		base := cpu.Bus.ReadMemoryUint16(cpu.ProgramCounter)
+		address := cpu.Bus.ReadMemoryUint16(base)
 
 		return address
 
 	case IndirectXMode:
-		base := cpu.Memory.Read(cpu.ProgramCounter)
+		base := cpu.Bus.ReadMemory(cpu.ProgramCounter)
 		pointer := base + cpu.registerX
-		low := cpu.Memory.Read(uint16(pointer))
-		high := cpu.Memory.Read(uint16(pointer + 1))
+		low := cpu.Bus.ReadMemory(uint16(pointer))
+		high := cpu.Bus.ReadMemory(uint16(pointer + 1))
 		address := uint16(high)<<8 | uint16(low)
 
 		return address
 
 	case IndirectYMode:
-		base := cpu.Memory.Read(cpu.ProgramCounter)
-		low := cpu.Memory.Read(uint16(base))
-		high := cpu.Memory.Read(uint16(base + 1))
+		base := cpu.Bus.ReadMemory(cpu.ProgramCounter)
+		low := cpu.Bus.ReadMemory(uint16(base))
+		high := cpu.Bus.ReadMemory(uint16(base + 1))
 		derefBase := uint16(high)<<8 | uint16(low)
 		deref := derefBase + uint16(cpu.registerY)
 
@@ -698,13 +698,13 @@ func (cpu *CPU) getOperandAddress(mode addressingMode) uint16 {
 }
 
 func (cpu *CPU) pushStack(value byte) {
-	cpu.Memory.Write(cpu.stackPointer.toAddress(), value)
+	cpu.Bus.WriteMemory(cpu.stackPointer.toAddress(), value)
 	cpu.stackPointer--
 }
 
 func (cpu *CPU) popStack() byte {
 	cpu.stackPointer++
-	value := cpu.Memory.Read(cpu.stackPointer.toAddress())
+	value := cpu.Bus.ReadMemory(cpu.stackPointer.toAddress())
 
 	return value
 }
