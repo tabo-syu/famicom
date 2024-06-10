@@ -9,6 +9,7 @@ import (
 	"github.com/tabo-syu/famicom/internal/cpu"
 	"github.com/tabo-syu/famicom/internal/game"
 	"github.com/tabo-syu/famicom/internal/memory"
+	"github.com/tabo-syu/famicom/internal/rom"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -52,8 +53,12 @@ var code = []byte{
 
 func run() error {
 	memory := memory.NewMemory()
+	rom, err := rom.NewROM(code)
+	if err != nil {
+		return err
+	}
 
-	cpu := cpu.NewCPU(bus.NewBus(&memory))
+	cpu := cpu.NewCPU(bus.NewBus(&memory, rom))
 	cpu.Load(code)
 	cpu.Reset(0xFF_FC)
 
