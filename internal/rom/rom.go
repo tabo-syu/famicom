@@ -25,7 +25,7 @@ type ROM struct {
 	ScreenMirroring Mirroring
 }
 
-func NewRom(raw []byte) (*ROM, error) {
+func NewROM(raw []byte) (*ROM, error) {
 	if !slices.Equal(raw[0:4], []byte{'N', 'E', 'S', 0x1A}) {
 		return nil, errors.New("file is not iNES file foramt")
 	}

@@ -58,7 +58,7 @@ func TestNewRom(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewRom(tt.args.raw)
+			got, err := NewROM(tt.args.raw)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewRom() error = %v, wantErr %v", err, tt.wantErr)
 				return
