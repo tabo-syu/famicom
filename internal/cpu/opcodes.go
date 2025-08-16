@@ -83,8 +83,7 @@ func (cpu *CPU) ASL(mode addressingMode) error {
 		cpu.Bus.WriteMemory(address, value)
 	}
 
-	cpu.updateZeroFlag(cpu.registerA)
-	cpu.updateNegativeFlag(value)
+	cpu.updateZeroAndNegativeFlags(value)
 
 	return nil
 }
@@ -122,11 +121,9 @@ func (cpu *CPU) BIT(mode addressingMode) error {
 
 	result := cpu.registerA & value
 
-	isOverflow := (result & byte(0b0100_0000) >> 6) == 1
-	cpu.status.setO(isOverflow)
-
-	isNegative := (result & byte(0b1000_0000) >> 7) == 1
-	cpu.status.setN(isNegative)
+	// BIT命令では、メモリ値のbit 6と7を直接プロセッサステータスにコピー
+	cpu.status.setO((value & 0b0100_0000) != 0)
+	cpu.status.setN((value & 0b1000_0000) != 0)
 
 	cpu.updateZeroFlag(result)
 
@@ -210,17 +207,11 @@ func (cpu *CPU) CMP(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 
 	value := cpu.Bus.ReadMemory(address)
-	if cpu.registerA == value {
-		cpu.status.setZ(true)
-	}
-	if cpu.registerA >= value {
-		cpu.status.setC(true)
-	}
-	if value&0b1000_0000 != 0 {
-		cpu.status.setN(true)
-	} else {
-		cpu.status.setN(false)
-	}
+	result := int16(cpu.registerA) - int16(value)
+	
+	cpu.status.setZ(cpu.registerA == value)
+	cpu.status.setC(cpu.registerA >= value)
+	cpu.status.setN((result & 0x80) != 0)
 
 	return nil
 }
@@ -229,17 +220,11 @@ func (cpu *CPU) CPX(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 
 	value := cpu.Bus.ReadMemory(address)
-	if cpu.registerX == value {
-		cpu.status.setZ(true)
-	}
-	if cpu.registerX >= value {
-		cpu.status.setC(true)
-	}
-	if value&0b1000_0000 != 0 {
-		cpu.status.setN(true)
-	} else {
-		cpu.status.setN(false)
-	}
+	result := int16(cpu.registerX) - int16(value)
+	
+	cpu.status.setZ(cpu.registerX == value)
+	cpu.status.setC(cpu.registerX >= value)
+	cpu.status.setN((result & 0x80) != 0)
 
 	return nil
 }
@@ -248,17 +233,11 @@ func (cpu *CPU) CPY(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 
 	value := cpu.Bus.ReadMemory(address)
-	if cpu.registerY == value {
-		cpu.status.setZ(true)
-	}
-	if cpu.registerY >= value {
-		cpu.status.setC(true)
-	}
-	if value&0b1000_0000 != 0 {
-		cpu.status.setN(true)
-	} else {
-		cpu.status.setN(false)
-	}
+	result := int16(cpu.registerY) - int16(value)
+	
+	cpu.status.setZ(cpu.registerY == value)
+	cpu.status.setC(cpu.registerY >= value)
+	cpu.status.setN((result & 0x80) != 0)
 
 	return nil
 }
@@ -494,8 +473,7 @@ func (cpu *CPU) ROR(mode addressingMode) error {
 		cpu.Bus.WriteMemory(address, value)
 	}
 
-	cpu.updateZeroFlag(cpu.registerA)
-	cpu.updateNegativeFlag(value)
+	cpu.updateZeroAndNegativeFlags(value)
 
 	return nil
 }
