@@ -104,7 +104,8 @@ func Test_ASL_ShiftFromMemory(t *testing.T) {
 	cpu.Run()
 
 	assert.True(t, cpu.status.c())
-	assert.True(t, cpu.status.z())
+	// Z はアキュムレータではなくシフト結果で判定する
+	assert.False(t, cpu.status.z())
 	assert.True(t, cpu.status.n())
 	assert.Equal(t, byte(0b1010_1010), cpu.Bus.ReadMemory(0x05))
 }
@@ -259,7 +260,8 @@ func Test_BIT_SetNegativeFlag(t *testing.T) {
 
 	assert.False(t, cpu.status.z())
 	assert.True(t, cpu.status.n())
-	assert.False(t, cpu.status.o())
+	// V はメモリ値のビット 6 なのでアキュムレータに関係なく立つ
+	assert.True(t, cpu.status.o())
 }
 
 func Test_BIT_SetOverflowFlag(t *testing.T) {
@@ -288,8 +290,9 @@ func Test_BIT_SetZeroFlag(t *testing.T) {
 	cpu.Run()
 
 	assert.True(t, cpu.status.z())
-	assert.False(t, cpu.status.n())
-	assert.False(t, cpu.status.o())
+	// AND 結果が 0 でも N/V はメモリ値のビット 7・6 から決まる
+	assert.True(t, cpu.status.n())
+	assert.True(t, cpu.status.o())
 }
 
 func Test_BIT_Absolute(t *testing.T) {
@@ -1061,7 +1064,8 @@ func Test_ROR_RotateFromMemory(t *testing.T) {
 	cpu.Run()
 
 	assert.True(t, cpu.status.c())
-	assert.True(t, cpu.status.z())
+	// Z はアキュムレータではなくローテート結果で判定する
+	assert.False(t, cpu.status.z())
 	assert.True(t, cpu.status.n())
 	assert.Equal(t, byte(0b1100_1010), cpu.Bus.ReadMemory(0x32))
 }
@@ -1075,16 +1079,17 @@ func Test_RTI_ReturnFromInterrupt(t *testing.T) {
 	cpu.Bus.WriteMemory(0x01_FF, 0x05)
 	cpu.Bus.WriteMemory(0x01_FE, 0x06)
 	cpu.Bus.WriteMemory(0x01_FD, 0b1001_0110)
+	// RTI は積まれた値をそのまま PC にするので 0x0506 から再開する
 	// SEC
-	cpu.Bus.WriteMemory(0x05_07, 0x38)
-	cpu.Bus.WriteMemory(0x05_08, 0x00)
+	cpu.Bus.WriteMemory(0x05_06, 0x38)
+	cpu.Bus.WriteMemory(0x05_07, 0x00)
 	cpu.stackPointer = stackPointer(0xFC)
 	cpu.Run()
 
 	// SEC affected
 	assert.Equal(t, byte(0b1001_0111), byte(cpu.status))
 	// assert.Equal(t, byte(0x01), cpu.registerX)
-	assert.Equal(t, uint16(0x05_09), cpu.ProgramCounter)
+	assert.Equal(t, uint16(0x05_08), cpu.ProgramCounter)
 	assert.Equal(t, byte(0xFF), byte(cpu.stackPointer))
 }
 

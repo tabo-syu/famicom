@@ -79,8 +79,7 @@ func (cpu *CPU) ASL(mode addressingMode) error {
 		cpu.Bus.WriteMemory(address, value)
 	}
 
-	cpu.updateZeroFlag(cpu.registerA)
-	cpu.updateNegativeFlag(value)
+	cpu.updateZeroAndNegativeFlags(value)
 
 	return nil
 }
@@ -116,15 +115,12 @@ func (cpu *CPU) BIT(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 	value := cpu.Bus.ReadMemory(address)
 
-	result := cpu.registerA & value
+	// N と V はアキュムレータと無関係に、メモリの値のビット 7・6 をそのまま転写する。
+	cpu.status.setN(value&0b1000_0000 != 0)
+	cpu.status.setO(value&0b0100_0000 != 0)
 
-	isOverflow := (result & byte(0b0100_0000) >> 6) == 1
-	cpu.status.setO(isOverflow)
-
-	isNegative := (result & byte(0b1000_0000) >> 7) == 1
-	cpu.status.setN(isNegative)
-
-	cpu.updateZeroFlag(result)
+	// Z のみアキュムレータとの AND 結果で判定する。
+	cpu.updateZeroFlag(cpu.registerA & value)
 
 	return nil
 }
@@ -466,15 +462,15 @@ func (cpu *CPU) ROR(mode addressingMode) error {
 		cpu.Bus.WriteMemory(address, value)
 	}
 
-	cpu.updateZeroFlag(cpu.registerA)
-	cpu.updateNegativeFlag(value)
+	cpu.updateZeroAndNegativeFlags(value)
 
 	return nil
 }
 
 func (cpu *CPU) RTI(mode addressingMode) error {
 	cpu.status = status(cpu.popStack())
-	cpu.ProgramCounter = cpu.popStackUint16() + 1
+	// RTS と異なり、RTI が積み直す値は戻り先そのものなので +1 してはいけない。
+	cpu.ProgramCounter = cpu.popStackUint16()
 
 	return nil
 }
@@ -635,7 +631,13 @@ func (cpu *CPU) getOperandAddress(mode addressingMode) uint16 {
 
 	case IndirectMode:
 		base := cpu.Bus.ReadMemoryUint16(cpu.ProgramCounter)
-		address := cpu.Bus.ReadMemoryUint16(base)
+
+		// 6502 のハードウェアバグ: 間接アドレスの下位バイトが 0xFF のとき、
+		// 上位バイトは次のページではなく同じページの先頭から読み出される。
+		// 例: JMP ($30FF) は 0x30FF と 0x3000 を読む。
+		low := uint16(cpu.Bus.ReadMemory(base))
+		high := uint16(cpu.Bus.ReadMemory(base&0xFF_00 | (base+1)&0x00_FF))
+		address := high<<8 | low
 
 		return address
 
