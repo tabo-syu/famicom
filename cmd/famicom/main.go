@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"os"
 	"time"
@@ -21,6 +22,7 @@ const (
 
 func main() {
 	if err := run(); err != nil {
+		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(failure)
 	}
 
@@ -51,9 +53,30 @@ var code = []byte{
 	0x60, 0xa6, 0xff, 0xea, 0xea, 0xca, 0xd0, 0xfb, 0x60,
 }
 
+// programStart はスネークのプログラムを展開する RAM 上のアドレス。
+const programStart = 0x06_00
+
+// newSnakeROM はスネークを起動するための iNES イメージを組み立てる。
+// プログラム自体は cpu.Load で RAM の 0x0600 に展開するため、
+// カートリッジ側はリセットベクタ (0xFFFC) だけを持つ。
+func newSnakeROM() []byte {
+	raw := make([]byte, 16+rom.PrgROMPageSize)
+	copy(raw, []byte{'N', 'E', 'S', 0x1A})
+	raw[4] = 1 // PRG ROM: 16KB * 1
+	raw[5] = 0 // CHR ROM: なし
+
+	// PRG ROM が 1 ページのときは 0x8000 と 0xC000 にミラーされるため、
+	// 0xFFFC/0xFFFD は PRG ROM の末尾から 4 バイト目に対応する。
+	vector := len(raw) - 4
+	raw[vector] = byte(programStart & 0x00_FF)
+	raw[vector+1] = byte(programStart >> 8)
+
+	return raw
+}
+
 func run() error {
 	memory := memory.NewMemory()
-	rom, err := rom.NewROM(code)
+	rom, err := rom.NewROM(newSnakeROM())
 	if err != nil {
 		return err
 	}

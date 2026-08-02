@@ -33,9 +33,10 @@ func NewCPU(bus bus.Bus) CPU {
 	}
 }
 
+// Load はプログラムを RAM の 0x0600 に配置する。
+// リセットベクタ (0xFFFC) はカートリッジ ROM 側が持つため、ここでは書き込まない。
 func (cpu *CPU) Load(program []byte) {
 	cpu.Bus.CopyToMemory(0x06_00, program)
-	cpu.Bus.WriteMemoryUint16(0xFF_FC, 0x06_00)
 }
 
 func (cpu *CPU) Reset(position uint16) {
