@@ -38,12 +38,8 @@ func (cpu *CPU) ADC(mode addressingMode) error {
 
 	rSign := result & 0b1000_0000
 	isDiffSign := rSign != aSign
-	if mayOverflow && isDiffSign {
-		cpu.status.setO(true)
-	}
-	if result > 0xFF {
-		cpu.status.setC(true)
-	}
+	cpu.status.setO(mayOverflow && isDiffSign)
+	cpu.status.setC(result > 0xFF)
 
 	cpu.registerA = byte(result & 0xFF)
 	cpu.updateZeroAndNegativeFlags(cpu.registerA)
@@ -210,17 +206,9 @@ func (cpu *CPU) CMP(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 
 	value := cpu.Bus.ReadMemory(address)
-	if cpu.registerA == value {
-		cpu.status.setZ(true)
-	}
-	if cpu.registerA >= value {
-		cpu.status.setC(true)
-	}
-	if value&0b1000_0000 != 0 {
-		cpu.status.setN(true)
-	} else {
-		cpu.status.setN(false)
-	}
+	cpu.status.setZ(cpu.registerA == value)
+	cpu.status.setC(cpu.registerA >= value)
+	cpu.updateNegativeFlag(cpu.registerA - value)
 
 	return nil
 }
@@ -229,17 +217,9 @@ func (cpu *CPU) CPX(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 
 	value := cpu.Bus.ReadMemory(address)
-	if cpu.registerX == value {
-		cpu.status.setZ(true)
-	}
-	if cpu.registerX >= value {
-		cpu.status.setC(true)
-	}
-	if value&0b1000_0000 != 0 {
-		cpu.status.setN(true)
-	} else {
-		cpu.status.setN(false)
-	}
+	cpu.status.setZ(cpu.registerX == value)
+	cpu.status.setC(cpu.registerX >= value)
+	cpu.updateNegativeFlag(cpu.registerX - value)
 
 	return nil
 }
@@ -248,17 +228,9 @@ func (cpu *CPU) CPY(mode addressingMode) error {
 	address := cpu.getOperandAddress(mode)
 
 	value := cpu.Bus.ReadMemory(address)
-	if cpu.registerY == value {
-		cpu.status.setZ(true)
-	}
-	if cpu.registerY >= value {
-		cpu.status.setC(true)
-	}
-	if value&0b1000_0000 != 0 {
-		cpu.status.setN(true)
-	} else {
-		cpu.status.setN(false)
-	}
+	cpu.status.setZ(cpu.registerY == value)
+	cpu.status.setC(cpu.registerY >= value)
+	cpu.updateNegativeFlag(cpu.registerY - value)
 
 	return nil
 }
@@ -531,12 +503,8 @@ func (cpu *CPU) SBC(mode addressingMode) error {
 	rSign := result & 0b1000_0000
 	isDiffSign := rSign != aSign
 	isOverflow := mayOverflow && isDiffSign
-	if isOverflow {
-		cpu.status.setO(true)
-	}
-	if result >= 0 {
-		cpu.status.setC(true)
-	}
+	cpu.status.setO(isOverflow)
+	cpu.status.setC(result >= 0)
 
 	cpu.registerA = byte(result & 0xFF)
 	cpu.updateZeroAndNegativeFlags(cpu.registerA)
