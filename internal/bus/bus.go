@@ -52,6 +52,13 @@ func (bus *bus) ReadMemory(address uint16) byte {
 }
 
 func (bus *bus) ReadMemoryUint16(address uint16) uint16 {
+	if 0x8000 <= address && address <= 0xFFFF {
+		low := uint16(bus.ReadPrgROM(address))
+		high := uint16(bus.ReadPrgROM(address + 1))
+
+		return high<<8 | low
+	}
+
 	masked, err := bus.mask(address)
 	if err != nil {
 		log.Println(err)
